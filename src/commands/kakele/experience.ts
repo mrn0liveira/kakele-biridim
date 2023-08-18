@@ -45,7 +45,7 @@ async function createExperienceImage (client: Biridim, initialLevel: number, fin
         font: '60pt Oswald'
       },
       {
-        text: client.i18n({
+        text: client.i18n.__({
           phrase: 'CREATE_EXPERIENCE_TEXT_BETWEEN',
           locale: language
         }),
