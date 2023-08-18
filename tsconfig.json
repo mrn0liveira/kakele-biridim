@@ -1,0 +1,46 @@
+// https://www.typescriptlang.org/tsconfig
+{
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "ESNext",
+    },
+    "esm": true
+  },
+  "compilerOptions": {
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    // Typings
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    // Modules
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "moduleDetection": "force",
+    "resolveJsonModule": true,
+
+    // Emit
+    "outDir": "dist",
+    "alwaysStrict": false,
+    "sourceMap": false,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowSyntheticDefaultImports": true,
+    "removeComments": false,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "importHelpers": true,
+
+    "strictNullChecks": true
+  },
+  "include": ["src", "**/*.ts"],
+  "exclude": ["node_modules"]
+}
