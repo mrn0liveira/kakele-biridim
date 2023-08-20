@@ -126,7 +126,7 @@ export default new InteractionCommand({
       data.total.money += resources.money
     }
 
-    data.current = getEquipmentUpgradeResources(Math.round(data.first + 5 / 5))
+    data.current = getEquipmentUpgradeResources(Math.round((data.first + 5) / 5))
 
     const image = await createUpgradeEquipmentImage(client, data, args.language)
 
