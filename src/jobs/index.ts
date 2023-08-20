@@ -23,14 +23,14 @@ export async function startNotificationsWorker (): Promise<void> {
     guilds = await getGuilds({})
   }
 
-  setTimeout(() => { void getGuild() }, (60 * 1000) * 5)
+  // setTimeout(() => { void getGuild() }, (60 * 1000) * 5)
 
-  await getGuild()
+  // await getGuild()
 
-  while (true) {
-    await notifyEvents(guilds)
-    await sleep(30 * 10000)
-    await notifyBoosts(guilds)
-    await sleep(30 * 10000)
-  }
+  // while (true) {
+  //   await notifyEvents(guilds)
+  //   await sleep(30 * 10000)
+  //   await notifyBoosts(guilds)
+  //   await sleep(30 * 10000)
+  // }
 }

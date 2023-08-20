@@ -3,6 +3,7 @@
 
 ### Node ###
 # Logs
+.eslintrc.cjs
 tests.txt
 .vscode
 *tmp
