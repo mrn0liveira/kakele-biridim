@@ -1,9 +1,13 @@
 import { type ChatInputCommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js'
 import InteractionCommand from '../../structures/command.ts'
 import { type SupportedLanguages, type CharacterData, type InteractionArgs } from '../../structures/misc.ts'
+
 import { CustomEmbed, capitalizeFirstLetter, getLevel } from '../../misc/util/index.ts'
+
 import { client } from '../../index.ts'
+
 import Canvas from 'canvas'
+
 import type Biridim from '../../structures/client.ts'
 
 export async function createRankingImage (client: Biridim, data: CharacterData[], category: string, server: string, language: SupportedLanguages): Promise<Canvas.Canvas> {
@@ -31,7 +35,6 @@ export async function createRankingImage (client: Biridim, data: CharacterData[]
     'achievements',
     'total_attack',
     'total_magic',
-    'pink',
     'total_armor',
     'total_armor',
     'mage',
@@ -42,13 +45,23 @@ export async function createRankingImage (client: Biridim, data: CharacterData[]
   ]
 
   const obj = {
-    server: client.i18n.__({ phrase: `TOP_SERVER_${server.toUpperCase()}`, locale: language }),
-    category: client.i18n.__({ phrase: `TOP_CATEGORY_${category.toUpperCase()}`, locale: language }),
+    server: client.i18n.__({
+      phrase: `TOP_SERVER_${server.toUpperCase()}`,
+      locale: language
+    }),
+
+    category: client.i18n.__({
+      phrase: `TOP_CATEGORY_${category.toUpperCase()}`,
+      locale: language
+    }),
+
     aliase: capitalizeFirstLetter(category.replace('-', ' ')),
+
     id: categories.indexOf(category)
   }
 
   const canvas = server === 'global' ? Canvas.createCanvas(1280, 720) : Canvas.createCanvas(1136, 720)
+
   const background = server === 'global' ? await Canvas.loadImage('./src/assets/top/1.png') : await Canvas.loadImage('./src/assets/top/2.png')
 
   const ctx = canvas.getContext('2d')
@@ -56,11 +69,13 @@ export async function createRankingImage (client: Biridim, data: CharacterData[]
   ctx.drawImage(background, 0, 0, canvas.width, canvas.height)
 
   const categoryIcon = await Canvas.loadImage(`./src/assets/top/${category}.png`)
+
   ctx.drawImage(categoryIcon, 10, 600, 128, 128)
 
   ctx.globalAlpha = 0.8
 
   ctx.fillStyle = '#54ff93'
+
   ctx.font = '35pt Teko'
 
   ctx.fillText(obj.server, 30, 65)
@@ -70,21 +85,57 @@ export async function createRankingImage (client: Biridim, data: CharacterData[]
   ctx.fillText(obj.category, 30, 105)
 
   if (obj.id <= 8) {
-    const formatted = data.sort((a, b) => parseFloat(b[category]) - parseFloat(a[category])).slice(0, 30)
+    const formatted = data.slice()
+      .sort((a, b) => {
+        if (Number(a[category]) > Number(b[category])) {
+          return -1
+        } else if (Number(a[category]) >= Number(b[category])) {
+          return 0
+        }
+
+        return 1
+      })
+      .slice(0, 30)
 
     ctx.font = '21pt Teko'
+
     ctx.fillStyle = '#54ff93'
 
     ctx.textAlign = 'start'
-    ctx.fillText(client.i18n.__({ phrase: 'RANKING_LEADERBOARD_NICKNAME', locale: language }), 470, 53)
+
+    ctx.fillText(
+      client.i18n.__({
+        phrase: 'RANKING_LEADERBOARD_NICKNAME',
+        locale: language
+      }),
+      470,
+      53
+    )
 
     ctx.textAlign = 'center'
+
     ctx.fillText(obj.category, 730, 53)
-    ctx.fillText(client.i18n.__({ phrase: 'RANKING_LEADERBOARD_VOCATION', locale: language }), 910, 53)
+
+    ctx.fillText(
+      client.i18n.__({
+        phrase: 'RANKING_LEADERBOARD_VOCATION',
+        locale: language
+      }),
+      910,
+      53
+    )
+
     ctx.fillText(client.i18n.__({ phrase: 'RANKING_LEADERBOARD_LEVEL', locale: language }), 1040, 53)
 
     if (server === 'global') {
-      ctx.fillText(client.i18n.__({ phrase: 'RANKING_LEADERBOARD_SERVER', locale: language }), 1170, 53)
+      ctx.fillText(
+        client.i18n.__({
+          phrase: 'RANKING_LEADERBOARD_SERVER',
+          locale: language
+        }),
+        1170,
+        53
+      )
     }
 
     let y = 83
@@ -99,35 +150,47 @@ export async function createRankingImage (client: Biridim, data: CharacterData[]
       switch (index) {
         case 0:
           ctx.fillStyle = '#ffd700'
+
           ctx.font = '18px HelveticaBold'
+
           break
 
         case 1:
           ctx.fillStyle = '#f2fcfc'
+
           ctx.font = '18px HelveticaBold'
+
           break
 
         case 2:
           ctx.fillStyle = '#f2a355'
+
           ctx.font = '18px HelveticaBold'
+
           break
 
         default:
           ctx.fillStyle = '#d4efff'
+
           ctx.font = '18px Helvetica'
+
           break
       }
 
       ctx.fillText(player.name, 470, y)
 
       ctx.fillStyle = '#d4efff'
+
       ctx.font = '18px Helvetica'
 
       ctx.fillText(String(index + 1), 420, y)
 
       ctx.textAlign = 'center'
+
       ctx.fillText(new Intl.NumberFormat().format(player[category]), 730, y)
+
       ctx.fillText(capitalizeFirstLetter(player.vocation.toLowerCase()), 910, y)
+
       ctx.fillText(new Intl.NumberFormat().format(getLevel(parseInt(player.experience))), 1040, y)
 
       if (server === 'global') {
@@ -139,24 +202,57 @@ export async function createRankingImage (client: Biridim, data: CharacterData[]
       y += 21
     }
   } else {
-    const formatted = data
+    const formatted = data.slice()
       .filter((a) => a.vocation === category.toUpperCase())
       .sort((a, b) => parseFloat(b.experience) - parseFloat(a.experience))
       .slice(0, 30)
 
     ctx.font = '21pt Teko'
+
     ctx.fillStyle = '#b5dcf5'
 
     ctx.textAlign = 'start'
-    ctx.fillText(client.i18n.__({ phrase: 'RANKING_LEADERBOARD_NICKNAME', locale: language }), 470, 53)
+
+    ctx.fillText(
+      client.i18n.__({
+        phrase: 'RANKING_LEADERBOARD_NICKNAME',
+        locale: language
+      }),
+      470,
+      53
+    )
 
     ctx.textAlign = 'center'
-    ctx.fillText(client.i18n.__({ phrase: 'RANKING_LEADERBOARD_EXPERIENCE', locale: language }), 730, 53)
+
+    ctx.fillText(
+      client.i18n.__({
+        phrase: 'RANKING_LEADERBOARD_EXPERIENCE',
+        locale: language
+      }),
+      730,
+      53
+    )
+
     ctx.fillText(client.i18n.__({ phrase: 'RANKING_LEADERBOARD_LEVEL', locale: language }), 890, 53)
-    ctx.fillText(client.i18n.__({ phrase: `TOP_CATEGORY_${getVocationAttribute().toUpperCase()}`, locale: language }), 1030, 53)
+
+    ctx.fillText(
+      client.i18n.__({
+        phrase: `TOP_CATEGORY_${getVocationAttribute().toUpperCase()}`,
+        locale: language
+      }),
+      1030,
+      53
+    )
 
     if (server === 'global') {
-      ctx.fillText(client.i18n.__({ phrase: 'RANKING_LEADERBOARD_SERVER', locale: language }), 1170, 53)
+      ctx.fillText(
+        client.i18n.__({
+          phrase: 'RANKING_LEADERBOARD_SERVER',
+          locale: language
+        }),
+        1170,
+        53
+      )
     }
 
     let y = 83
@@ -171,39 +267,52 @@ export async function createRankingImage (client: Biridim, data: CharacterData[]
       switch (index) {
         case 0:
           ctx.fillStyle = '#ffd700'
+
           ctx.font = '18px HelveticaBold'
+
           break
 
         case 1:
           ctx.fillStyle = '#f2fcfc'
+
           ctx.font = '18px HelveticaBold'
+
           break
 
         case 2:
           ctx.fillStyle = '#f2a355'
+
           ctx.font = '18px HelveticaBold'
+
           break
 
         default:
           ctx.fillStyle = '#d4efff'
+
           ctx.font = '18px Helvetica'
+
           break
       }
 
       ctx.fillText(player.name, 470, y)
 
       ctx.fillStyle = '#d4efff'
+
       ctx.font = '18px Helvetica'
 
       ctx.fillText(String(formatted.indexOf(player) + 1), 420, y)
 
       ctx.textAlign = 'center'
+
       ctx.fillText(new Intl.NumberFormat().format(parseInt(player.experience)), 730, y)
+
       ctx.fillText(new Intl.NumberFormat().format(getLevel(parseInt(player.experience))), 890, y)
+
       ctx.fillText(new Intl.NumberFormat().format(player[getVocationAttribute()]), 1030, y)
 
       if (server === 'global') {
         ctx.fillStyle = '#d4efff'
+
         ctx.fillText(capitalizeFirstLetter(player.server ?? ''), 1170, y)
       }
 
@@ -232,7 +341,6 @@ export default new InteractionCommand({
           'pt-BR': 'A categoria a ser utilizada',
           pl: 'Kategoria do użycia'
         })
-
         .addChoices(
           {
             name: 'Experience',
@@ -352,9 +460,9 @@ export default new InteractionCommand({
             }
           }
         )
-
         .setRequired(true)
     )
+
     .addStringOption((option) =>
       option
         .setName('server')
@@ -364,7 +472,6 @@ export default new InteractionCommand({
           'pt-BR': 'O servidor a ser utilizado',
           pl: 'Serwer do użycia'
         })
-
         .addChoices(
           {
             name: 'South America - Red',
@@ -459,6 +566,7 @@ export default new InteractionCommand({
         )
         .setRequired(true)
     ),
+
   options: {
     clientPermissions: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.UseExternalEmojis, PermissionFlagsBits.AttachFiles],
     cooldown: 3,
@@ -466,19 +574,28 @@ export default new InteractionCommand({
     premium: false,
     ephemeral: false
   },
+
   async run (interaction: ChatInputCommandInteraction<'cached'>, args: InteractionArgs) {
     const category = interaction.options.getString('category') ?? ''
+
     const server = interaction.options.getString('server') ?? ''
 
-    const serverData: CharacterData[] = server === 'global' ? global.todayPlayerData : global.todayPlayerData.filter(x => x.server === server)
+    const serverData: CharacterData[] = server === 'global' ? global.todayPlayerData : global.todayPlayerData.filter((x) => x.server === server)
 
     if (serverData === undefined || serverData?.length === 0) {
       return await interaction.editReply({
         embeds: [
           new CustomEmbed()
+
             .setTitle(client.translate('RANKING_UNKNOWN_SERVER_DATA', args.language))
+
             .setDescription(client.translate('RANKING_UNKNOWN_SERVER_DATA_DESCRIPTION', args.language))
-            .setAuthor({ name: 'Kakele Biridim', iconURL: client.icons.ElderVampireBrooch })
+
+            .setAuthor({
+              name: 'Kakele Biridim',
+              iconURL: client.icons.ElderVampireBrooch
+            })
+
             .setColor(client.colors.DarkRed)
         ]
       })
@@ -487,10 +604,13 @@ export default new InteractionCommand({
     const image = await createRankingImage(client, serverData, category, server, args.language)
 
     await interaction.editReply({
-      files: [{
-        name: `${interaction.commandName}-${category}-${server}.png`,
-        attachment: image.toBuffer()
-      }]
+      files: [
+        {
+          name: `${interaction.commandName}-${category}-${server}.png`,
+
+          attachment: image.toBuffer()
+        }
+      ]
     })
   }
 })
