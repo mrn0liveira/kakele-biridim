@@ -221,5 +221,11 @@
   "COMMAND_REPORT_TITLE": "Thank you for submitting your report.",
   "COMMAND_REPORT_DESCRIPTION": "It will be sent to the developer and analyzed as quickly as possible.",
   "INTERACTION_ERROR_TITLE": "Error executing this command",
-  "INTERACTION_ERROR_DESCRIPTION": "A report has been sent to the developer.\nIf you have anything to add, use the /report command."
+  "INTERACTION_ERROR_DESCRIPTION": "A report has been sent to the developer.\nIf you have anything to add, use the /report command.",
+  "UPDATE_NICKNAME_LEVEL_UNKNOWN_PLAYER_TITLE": "Player not found",
+  "UPDATE_NICKNAME_LEVEL_UNKNOWN_PLAYER_DESCRIPTION": "Please check if it's possible to locate player {{{player}}} using the command /player info",
+  "UPDATE_NICKNAME_LEVEL_SUCESS_TITLE": "Level successfully updated",
+  "UPDATE_NICKNAME_LEVEL_SUCESS_DESCRIPTION": "Player {{{player}}} is now at level {{{level}}}",
+  "UPDATE_NICKNAME_LEVEL_ERROR_TITLE": "Nickname change unsuccessful",
+  "UPDATE_NICKNAME_LEVEL_ERROR_DESCRIPTION": "Please verify if the bot is above you in the hierarchy, otherwise, it won't be possible to proceed."
 }

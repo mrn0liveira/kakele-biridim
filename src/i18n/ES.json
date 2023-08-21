@@ -221,5 +221,11 @@
   "COMMAND_REPORT_TITLE": "Gracias por enviar tu informe.",
   "COMMAND_REPORT_DESCRIPTION": "Será enviado al desarrollador y analizado lo más rápido posible.",
   "INTERACTION_ERROR_TITLE": "Error al ejecutar este comando",
-  "INTERACTION_ERROR_DESCRIPTION": "Se ha enviado un informe al desarrollador.\nSi tienes algo que añadir, usa el comando /report."
+  "INTERACTION_ERROR_DESCRIPTION": "Se ha enviado un informe al desarrollador.\nSi tienes algo que añadir, usa el comando /report.",
+  "UPDATE_NICKNAME_LEVEL_UNKNOWN_PLAYER_TITLE": "Jugador no encontrado",
+  "UPDATE_NICKNAME_LEVEL_UNKNOWN_PLAYER_DESCRIPTION": "Por favor verifica si es posible localizar al jugador {{{player}}} usando el comando /player info",
+  "UPDATE_NICKNAME_LEVEL_SUCESS_TITLE": "Nivel actualizado exitosamente",
+  "UPDATE_NICKNAME_LEVEL_SUCESS_DESCRIPTION": "El jugador {{{player}}} ahora está en el nivel {{{level}}}",
+  "UPDATE_NICKNAME_LEVEL_ERROR_TITLE": "Cambio de apodo fallido",
+  "UPDATE_NICKNAME_LEVEL_ERROR_DESCRIPTION": "Por favor verifica si el bot está por encima de ti en la jerarquía, de lo contrario, no será posible proceder."  
 }

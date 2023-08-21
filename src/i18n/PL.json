@@ -221,5 +221,11 @@
   "COMMAND_REPORT_TITLE": "Dziękujemy za przesłanie swojego zgłoszenia.",
   "COMMAND_REPORT_DESCRIPTION": "Zostanie ono wysłane do programisty i przeanalizowane tak szybko, jak to możliwe.",
   "INTERACTION_ERROR_TITLE": "Błąd podczas wykonywania tego polecenia",
-  "INTERACTION_ERROR_DESCRIPTION": "Został wysłany raport do programisty.\nJeśli masz coś do dodania, użyj polecenia /report."
+  "INTERACTION_ERROR_DESCRIPTION": "Został wysłany raport do programisty.\nJeśli masz coś do dodania, użyj polecenia /report.",
+  "UPDATE_NICKNAME_LEVEL_UNKNOWN_PLAYER_TITLE": "Nie znaleziono gracza",
+  "UPDATE_NICKNAME_LEVEL_UNKNOWN_PLAYER_DESCRIPTION": "Sprawdź, czy można zlokalizować gracza {{{player}}} za pomocą komendy /player info",
+  "UPDATE_NICKNAME_LEVEL_SUCESS_TITLE": "Poziom zaktualizowany pomyślnie",
+  "UPDATE_NICKNAME_LEVEL_SUCESS_DESCRIPTION": "Gracz {{{player}}} ma teraz poziom {{{level}}}",
+  "UPDATE_NICKNAME_LEVEL_ERROR_TITLE": "Nie udało się zmienić pseudonimu",
+  "UPDATE_NICKNAME_LEVEL_ERROR_DESCRIPTION": "Proszę sprawdź, czy bot jest nad tobą w hierarchii, w przeciwnym razie nie będzie możliwe kontynuowanie."  
 }
