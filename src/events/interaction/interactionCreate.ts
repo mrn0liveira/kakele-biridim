@@ -2,7 +2,7 @@ import { Events, CommandInteraction, ButtonInteraction, ModalSubmitInteraction, 
 import { getGuild, getUser } from '../../misc/database/index.ts'
 import { CustomEmbed, getLanguageName } from '../../misc/util/index.ts'
 import Fuse from 'fuse.js'
-import { SupportedLanguages, type InteractionArgs, type CharacterData, type KakeleMonster } from '../../structures/misc.ts'
+import { SupportedLanguages, type InteractionArgs, type KakeleMonster } from '../../structures/misc.ts'
 import DiscordEvent from '../../structures/event.ts'
 import * as marketplace from '../../misc/marketplace/index.ts'
 import * as premium from '../../misc/premium/index.ts'
@@ -189,19 +189,18 @@ export default new DiscordEvent({
         const filter = {
           includeScore: true,
           shouldSort: true,
-          threshold: playerSearchThreshold,
-          keys: ['name']
+          threshold: playerSearchThreshold
         }
 
-        const fuse = new Fuse(global.todayPlayerData, filter)
-        const result = fuse.search(focusedOption.value).slice(0, playerSearchResultLimit) as Array<{ item: CharacterData }>
+        const fuse = new Fuse(global.todayPlayerDataNames, filter)
+        const result = fuse.search(focusedOption.value).slice(0, playerSearchResultLimit) as Array<{ item: string }>
 
         if (result.length === 0) return
 
         for (const { item } of result) {
           response.push({
-            name: item.name,
-            value: item.name
+            name: item,
+            value: item
           })
         }
 
