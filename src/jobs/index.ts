@@ -17,20 +17,12 @@ export async function loadCronJobs (): Promise<void> {
 }
 
 export async function startNotificationsWorker (): Promise<void> {
-  let guilds: any[] = []
+  while (true) {
+    const guilds = await getGuilds({})
 
-  async function getGuild (): Promise<void> {
-    guilds = await getGuilds({})
+    await notifyEvents(guilds)
+    await sleep(30 * 10000)
+    await notifyBoosts(guilds)
+    await sleep(30 * 10000)
   }
-
-  // setTimeout(() => { void getGuild() }, (60 * 1000) * 5)
-
-  // await getGuild()
-
-  // while (true) {
-  //   await notifyEvents(guilds)
-  //   await sleep(30 * 10000)
-  //   await notifyBoosts(guilds)
-  //   await sleep(30 * 10000)
-  // }
 }

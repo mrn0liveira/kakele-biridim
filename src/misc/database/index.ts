@@ -49,7 +49,7 @@ export async function getMarketList (query: any): Promise<IOfferItemDocument[]> 
 
 export async function getGuilds (query: any): Promise<IGuild[]> {
   // @ts-expect-error Ignore cache dependency
-  const guilds: IGuild[] = await Guild.find(query).populate([{ path: 'vip.payers', strictPopulate: false }]).cache(10, `guilds${JSON.stringify(query)}`)
+  const guilds: IGuild[] = await Guild.find(query).populate([{ path: 'vip.payers', strictPopulate: false }]).cache(300, `guilds${JSON.stringify(query)}`)
 
   return guilds
 }
