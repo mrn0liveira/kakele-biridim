@@ -494,7 +494,7 @@ export default new InteractionCommand({
           }
 
           async function showIndexSelectionModal (res: MessageComponentInteraction): Promise<void> {
-            const filter = (r): boolean => r.customId === 'e-index-modal'
+            const filter = (r): boolean => r.customId === 'NOTIFICATION_MODAL_EVENT_INDEX_SELECTION'
 
             await res.showModal(NOTIFICATION_MODAL_EVENT_INDEX_SELECTION(client, args.language))
 
@@ -1072,12 +1072,12 @@ export default new InteractionCommand({
           }
 
           async function showIndexSelectionModal (res: MessageComponentInteraction): Promise<void> {
-            const filter = (r): boolean => r.customId === 'e-index-modal'
+            const filter = (r): boolean => r.customId === 'NOTIFICATION_MODAL_EVENT_INDEX_SELECTION'
 
             await res.showModal(NOTIFICATION_MODAL_EVENT_INDEX_SELECTION(client, args.language))
 
             interaction
-              .awaitModalSubmit({ filter, time: 25000 })
+              .awaitModalSubmit({ filter, time: 30000 })
               .then(async (e) => {
                 await e.deferUpdate()
 
