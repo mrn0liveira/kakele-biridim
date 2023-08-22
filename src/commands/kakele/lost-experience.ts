@@ -2,7 +2,7 @@ import { type ChatInputCommandInteraction, PermissionFlagsBits, SlashCommandBuil
 import InteractionCommand from '../../structures/command.ts'
 import { type SupportedLanguages, type CharacterData, type InteractionArgs } from '../../structures/misc.ts'
 import { CustomEmbed, capitalizeFirstLetter, getExperienceToNextLevel, getLevel } from '../../misc/util/index.ts'
-import { client } from '../../index.ts'
+import { client, logger } from '../../index.ts'
 import type Biridim from '../../structures/client.ts'
 import { fillMixedText } from '../../misc/canvas/index.ts'
 import { type Canvas, createCanvas, loadImage } from 'canvas'
@@ -248,6 +248,22 @@ export default new InteractionCommand({
             .setColor(client.colors.DarkRed)
         ]
       })
+    }
+
+    if (!serverData.some(x => Number(x.progress) < 0)) {
+      await interaction.editReply({
+        embeds: [
+          new CustomEmbed()
+            .setTitle(client.translate('RANKING_NO_PROGRESS_SERVER_DATA', args.language))
+            .setDescription(client.translate('RANKING_NO_PROGRESS_SERVER_DATA_DESCRIPTION', args.language))
+            .setAuthor({ name: 'Kakele Biridim', iconURL: client.icons.ElderVampireBrooch })
+            .setColor(client.colors.DarkRed)
+        ]
+      })
+
+      logger.error(`${interaction.commandName} No progress on ${server} server`)
+
+      return
     }
 
     const image = await createDailyLostRankingImage(client, serverData, server, args.language)

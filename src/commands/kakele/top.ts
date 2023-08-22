@@ -4,7 +4,7 @@ import { type SupportedLanguages, type CharacterData, type InteractionArgs } fro
 
 import { CustomEmbed, capitalizeFirstLetter, getLevel } from '../../misc/util/index.ts'
 
-import { client } from '../../index.ts'
+import { client, logger } from '../../index.ts'
 
 import Canvas from 'canvas'
 
@@ -84,16 +84,15 @@ export async function createRankingImage (client: Biridim, data: CharacterData[]
 
   ctx.fillText(obj.category, 30, 105)
 
-  if (obj.id <= 8) {
-    const formatted = data.slice()
-      .sort((a, b) => {
-        if (Number(a[category]) > Number(b[category])) {
-          return -1
-        } else if (Number(a[category]) >= Number(b[category])) {
-          return 0
-        }
+  const temp = data.slice()
 
-        return 1
+  if (obj.id <= 8) {
+    const formatted = temp
+      .sort(function (a, b) {
+        if (Number(b[category] ?? 0) > Number(a[category])) return 1
+        if (Number(b[category] ?? 0) < Number(a[category])) return -1
+
+        return 0
       })
       .slice(0, 30)
 
@@ -145,7 +144,7 @@ export async function createRankingImage (client: Biridim, data: CharacterData[]
     for (const player of formatted) {
       ctx.textAlign = 'start'
 
-      const index = formatted.indexOf(player)
+      const index = Number(formatted.indexOf(player))
 
       switch (index) {
         case 0:
@@ -202,7 +201,7 @@ export async function createRankingImage (client: Biridim, data: CharacterData[]
       y += 21
     }
   } else {
-    const formatted = data.slice()
+    const formatted = temp
       .filter((a) => a.vocation === category.toUpperCase())
       .sort((a, b) => parseFloat(b.experience) - parseFloat(a.experience))
       .slice(0, 30)
@@ -300,7 +299,7 @@ export async function createRankingImage (client: Biridim, data: CharacterData[]
 
       ctx.font = '18px Helvetica'
 
-      ctx.fillText(String(formatted.indexOf(player) + 1), 420, y)
+      ctx.fillText(String(Number(formatted.indexOf(player)) + 1), 420, y)
 
       ctx.textAlign = 'center'
 
@@ -599,6 +598,22 @@ export default new InteractionCommand({
             .setColor(client.colors.DarkRed)
         ]
       })
+    }
+
+    if (!serverData.some(x => Number(x.experience) > 0)) {
+      await interaction.editReply({
+        embeds: [
+          new CustomEmbed()
+            .setTitle(client.translate('RANKING_NO_PROGRESS_SERVER_DATA', args.language))
+            .setDescription(client.translate('RANKING_NO_PROGRESS_SERVER_DATA_DESCRIPTION', args.language))
+            .setAuthor({ name: 'Kakele Biridim', iconURL: client.icons.ElderVampireBrooch })
+            .setColor(client.colors.DarkRed)
+        ]
+      })
+
+      logger.error(`${interaction.commandName} No progress on ${server} server`)
+
+      return
     }
 
     const image = await createRankingImage(client, serverData, category, server, args.language)
