@@ -34,10 +34,13 @@
     "dotenv": "^16.1.4",
     "fuse.js": "^6.6.2",
     "i18n": "^0.15.1",
+    "i18n-js": "^4.3.0",
+    "lowercase-keys": "^3.0.0",
     "mongoose": "^7.2.3",
     "node-cron": "^3.0.2",
     "recachegoose": "^9.2.0",
     "shelljs": "^0.8.5",
+    "venom-bot": "^5.0.21",
     "winston": "^3.9.0",
     "winston-daily-rotate-file": "^4.7.1"
   }

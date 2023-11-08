@@ -19,7 +19,7 @@ async function createPlayerInfoImage (client: Biridim, player: CharacterData, la
 
   ctx.drawImage(cachedImages.playerInfo, 0, 0, canvas.width, canvas.height)
 
-  const weeklyPlayerData: CharacterData = global.weeklyPlayerData?.find(x => x.name === player.name)
+  const dailyPlayerData: CharacterData = global.dailyPlayerData?.find(x => x.name === player.name)
 
   const texts: TextData[] = [
     // text
@@ -48,7 +48,7 @@ async function createPlayerInfoImage (client: Biridim, player: CharacterData, la
     { text: new Intl.NumberFormat().format(Number(player.achievements)), x: 1000 + 270, y: 305, fontSize: 25, font: 'Helvetica', color: '#331a00' },
     { text: capitalizeFirstLetter(player.server ?? ''), x: 1000 + 270, y: 345, fontSize: 25, font: 'Helvetica', color: '#331a00' },
     { text: new Intl.NumberFormat().format(Number(player.experience)), x: 1000 + 270, y: 415, fontSize: 25, font: 'Helvetica', color: '#331a00' },
-    { text: new Intl.NumberFormat().format(Number(weeklyPlayerData?.progress ?? 0)), x: 1000 + 270, y: 455, fontSize: 25, font: 'Helvetica', color: '#000' },
+    { text: new Intl.NumberFormat().format(Number(dailyPlayerData?.progress ?? 0)), x: 1000 + 270, y: 455, fontSize: 25, font: 'Helvetica', color: '#331a00' },
     { text: new Intl.NumberFormat().format(getExperienceToNextLevel(getLevel(Number(player.experience)))), x: 1000 + 270, y: 495, fontSize: 25, font: 'Helvetica', color: '#331a00' }
   ]
 

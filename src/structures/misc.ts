@@ -26,6 +26,7 @@ export interface CharacterData {
   total_magic: string
   server?: string
   progress?: number | string
+  timestamp?: string | null
 }
 
 export enum SupportedLanguages {

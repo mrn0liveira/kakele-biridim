@@ -173,7 +173,7 @@ export default new InteractionCommand({
       threshold: 0.8,
       keys: ['name.' + language]
     }
-
+    
     const fuse = new Fuse(client.kakeleMonsters, filter)
     const result = fuse
       .search(monster)
@@ -189,7 +189,7 @@ export default new InteractionCommand({
 
       return await interaction.editReply({ embeds: [noResultEmbed] })
     }
-
+    
     if (result.length > 1) {
       const resultSelectionEmbed = new CustomEmbed()
         .setTitle(client.translate('PLAYER_SEARCH_RESULT_SELECTION_TITLE', args.language))

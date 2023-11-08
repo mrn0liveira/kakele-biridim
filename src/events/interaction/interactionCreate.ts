@@ -78,6 +78,24 @@ export default new DiscordEvent({
           return
         }
       }
+      
+      if (args.user?.blacklisted !== undefined) {
+        const ban = args.user.blacklisted.find((x) => (x.commands?.includes(interaction.commandName) || x.commands?.includes('all')) && new Date(x.expiration_date) > new Date())
+
+        if (ban !== undefined) {
+          await interaction.reply({
+            embeds: [
+              new CustomEmbed()
+                .setTitle('Blacklisted User')
+                .setDescription("You won't be able to use the bot commands.")
+                .setAuthor({ name: 'Kakele Biridim', iconURL: client.icons.ElderVampireBrooch })
+                .setColor(client.colors.DarkRed)
+            ],
+            ephemeral: true
+          })
+          return
+        }
+      }
 
       if (command.options.premium) {
         const guildPayers =
@@ -110,7 +128,7 @@ export default new DiscordEvent({
 
       logger.info(Events.InteractionCreate, interaction.commandName, `userId${interaction.user.id} ${interaction.guildId != null ? `guildId${interaction.guildId}` : 'DM'}`)
 
-      await command.run(interaction, args)
+      command.run(interaction, args)
         .catch(async (e) => {
           logger.error(Events.InteractionCreate, `commandName${interaction.commandName} userId${interaction.user.id} ${interaction.guildId != null ? `guildId${interaction.guildId}` : 'DM'}`, e)
 
@@ -207,10 +225,13 @@ export default new DiscordEvent({
         await interaction.respond(response)
       } else if (interaction.commandName === 'monster-info') {
         const focusedOption = interaction.options.getFocused(true)
-
-        const language = getLanguageName(args.language.toString())
+        
 
         if (focusedOption.value?.length === 0) return
+        
+        args.language = SupportedLanguages[args.user.language ?? args.guild?.language ?? SupportedLanguages.EN]
+        
+        const language = getLanguageName(args.language.toString())
 
         const filter = {
           includeScore: true,

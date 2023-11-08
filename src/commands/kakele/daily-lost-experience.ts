@@ -8,9 +8,10 @@ import { fillMixedText } from "../../misc/canvas/index.ts";
 import { type Canvas, createCanvas, loadImage } from "canvas";
 import fs from "fs";
 
-const compare = (a, b) => Number(b.progress) - Number(a.progress);
-
-export async function createDailyRankingImage(
+const compare = (a, b) => {
+  return Number(a.progress) - Number(b.progress);
+};
+export async function createDailyLostRankingImage(
   client: Biridim,
   data: CharacterData[],
   server: string,
@@ -24,25 +25,25 @@ export async function createDailyRankingImage(
 
   const canvasWidth = server === "global" ? 1280 : 1136;
   const canvas = createCanvas(canvasWidth, 720);
-  const backgroundImagePath = server === "global" ? "./src/assets/daily-experience/2.png" : "./src/assets/daily-experience/3.png";
+  const backgroundImagePath = server === "global" ? "./src/assets/lost-experience/0.png" : "./src/assets/lost-experience/111.png";
   const background = await loadImage(backgroundImagePath);
   const ctx = canvas.getContext("2d");
 
   ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
   const obj = {
-    server: client.translate(`TOP_SERVER_${server.toUpperCase()}`, language),
+    server: client.i18n.__({ phrase: `TOP_SERVER_${server.toUpperCase()}`, locale: language }),
   };
 
   ctx.globalAlpha = 0.8;
 
   ctx.font = "25pt Teko";
-  ctx.fillStyle = "#42f5c2";
+  ctx.fillStyle = "#f5ce42";
   ctx.fillText(client.translate("OFFICIAL_WEBSITE_AD", language).toUpperCase(), 30, 65);
 
   ctx.font = "35pt Teko";
-  ctx.fillStyle = "#3d91cc";
-  ctx.fillText(client.translate("DAILY_EXPERIENCE_TITLE", language), 30, 105);
+  ctx.fillStyle = "#d16324";
+  ctx.fillText(client.i18n.__({ phrase: "DAILY_LOST_EXPERIENCE_TITLE", locale: language }), 30, 105);
 
   ctx.fillStyle = "#ffecd6";
   ctx.fillText(obj.server, 30, 145);
@@ -50,34 +51,24 @@ export async function createDailyRankingImage(
   const formatted = data
     .sort(compare)
     .filter((player) => !global.rankingBlacklist.includes(player.name))
-    .filter((player) => Number(player.progress) > 0)
+    .filter((player) => Number(player.progress) < 0)
     .slice(0, 30);
 
   ctx.textAlign = "center";
-  ctx.fillStyle = "#3d91cc";
+  ctx.fillStyle = "#d16324";
   ctx.font = "21pt Teko";
 
-  ctx.fillText(client.translate("RANKING_LEADERBOARD_PROGRESS", language), 720, 47);
-  ctx.fillText(client.translate("RANKING_LEADERBOARD_NICKNAME", language), 520, 47);
-  ctx.fillText(client.translate("RANKING_LEADERBOARD_EXPERIENCE", language), 880, 47);
-  ctx.fillText(client.translate("RANKING_LEADERBOARD_VOCATION", language), 1035, 47);
+  ctx.fillText(client.i18n.__({ phrase: "RANKING_LEADERBOARD_NICKNAME", locale: language }), 520, 47);
+  ctx.fillText(client.i18n.__({ phrase: "RANKING_LEADERBOARD_PROGRESS", locale: language }), 720, 47);
+  ctx.fillText(client.i18n.__({ phrase: "RANKING_LEADERBOARD_EXPERIENCE", locale: language }), 880, 47);
+  ctx.fillText(client.i18n.__({ phrase: "RANKING_LEADERBOARD_VOCATION", locale: language }), 1035, 47);
 
   if (server === "global") {
-    ctx.fillText(client.translate("RANKING_LEADERBOARD_SERVER", language), 1170, 47);
+    ctx.fillText(client.i18n.__({ phrase: "RANKING_LEADERBOARD_SERVER", locale: language }), 1170, 47);
   }
 
   ctx.textAlign = "start";
   ctx.fillStyle = "#dbc4ab";
-  ctx.font = "12px Helvetica";
-
-  if (!Number.isNaN(Date.parse(new Date(timestamp.old)?.toLocaleDateString()))) {
-    ctx.fillText(new Date(timestamp.old).toUTCString(), 20, 690);
-  }
-
-  if (!Number.isNaN(Date.parse(new Date(timestamp.new)?.toLocaleDateString()))) {
-    ctx.fillText(new Date(timestamp.new).toUTCString(), 20, 710);
-  }
-
   ctx.font = "18px Helvetica";
 
   let y = 77;
@@ -85,15 +76,15 @@ export async function createDailyRankingImage(
   for (let i = 0; i < formatted.length; i += 1) {
     switch (i) {
       case 0:
-        ctx.fillStyle = "#ffd700";
+        ctx.fillStyle = "#f21111";
         ctx.font = "18px HelveticaBold";
         break;
       case 1:
-        ctx.fillStyle = "#f2fcfc";
+        ctx.fillStyle = "#f23311";
         ctx.font = "18px HelveticaBold";
         break;
       case 2:
-        ctx.fillStyle = "#f2a355";
+        ctx.fillStyle = "#f26411";
         ctx.font = "18px HelveticaBold";
         break;
       default:
@@ -121,19 +112,34 @@ export async function createDailyRankingImage(
 
     ctx.textAlign = "center";
     ctx.fillText(new Intl.NumberFormat().format(Number(formatted[i].progress)), 880, y);
-    ctx.fillText(client.translate(`TOP_CATEGORY_${formatted[i].vocation}`, language), 1030, y);
+    ctx.fillText(client.i18n.__({ phrase: `TOP_CATEGORY_${formatted[i].vocation}`, locale: language }), 1030, y);
 
     if (server === "global") {
       ctx.fillText(capitalizeFirstLetter(formatted[i].server ?? ""), 1170, y);
     }
 
+    ctx.globalAlpha = 0.05;
+
+    ctx.textAlign = "start";
+    ctx.fillStyle = "#dbc4ab";
+    ctx.font = "12px Helvetica";
+
+    if (!Number.isNaN(Date.parse(new Date(timestamp.old)?.toLocaleDateString()))) {
+      ctx.fillText(new Date(timestamp.old).toUTCString(), 20, 690);
+    }
+
+    if (!Number.isNaN(Date.parse(new Date(timestamp.new)?.toLocaleDateString()))) {
+      ctx.fillText(new Date(timestamp.new).toUTCString(), 20, 710);
+    }
+
+    ctx.globalAlpha = 0.8;
     ctx.textAlign = "start";
 
     fillMixedText(
       ctx,
       [
         { text: level.toString(), fillStyle: "#dbc4ab", font: "16px HelveticaBoldMS" },
-        { text: `+${progress}`, fillStyle: "#3d91cc", font: "12px HelveticaBoldMS" },
+        { text: `${progress}`, fillStyle: "#ed2424", font: "12px HelveticaBoldMS" },
       ],
       690,
       y
@@ -147,12 +153,12 @@ export async function createDailyRankingImage(
 
 export default new InteractionCommand({
   data: new SlashCommandBuilder()
-    .setName("daily-experience")
-    .setDescription("Calculate the daily experience progress ranking")
+    .setName("daily-lost-experience")
+    .setDescription("Calculate the daily lost experience progress ranking")
     .setDescriptionLocalizations({
-      "es-ES": "Calcular el ranking de progreso diario de experiencia",
-      "pt-BR": "Calcular o ranking diário de progresso de experiência",
-      pl: "Oblicz ranking postępu dziennego doświadczenia",
+      "es-ES": "Calcular el ranking diario de progreso de experiencia perdida",
+      "pt-BR": "Calcular o ranking diário de progresso de experiência perdida",
+      pl: "Oblicz ranking dziennego postępu doświadczenia straconego",
     })
     .addStringOption((option) =>
       option
@@ -317,7 +323,7 @@ export default new InteractionCommand({
       });
     }
 
-    if (!serverData.some((x) => Number(x.progress) > 0)) {
+    if (!serverData.some((x) => Number(x.progress) < 0)) {
       await interaction.editReply({
         embeds: [
           new CustomEmbed()
@@ -327,12 +333,13 @@ export default new InteractionCommand({
             .setColor(client.colors.DarkRed),
         ],
       });
+
       logger.error(`${interaction.commandName} No progress on ${server} server`);
 
       return;
     }
 
-    const image = await createDailyRankingImage(client, JSON.parse(JSON.stringify(serverData)), server, args.language, global.dailyPlayerData.timestamp);
+    const image = await createDailyLostRankingImage(client, JSON.parse(JSON.stringify(serverData)), server, args.language, global.dailyPlayerData.timestamp);
 
     await interaction.editReply({
       files: [

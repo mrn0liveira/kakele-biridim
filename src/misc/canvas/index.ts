@@ -44,15 +44,11 @@ Canvas.registerFont('./src/assets/fonts/small_pixel-7.ttf', {
 })
 
 Canvas.registerFont('./src/assets/fonts/Bebas-Regular.ttf', {
-  family: 'Pixel'
+  family: 'Bebas'
 })
 
 // Loading images
 export const cachedImages: Record<string, Canvas.Image> = {
-  statMagic: await loadImage('./src/assets/marketplace/icons/magic.png'),
-  statAttack: await loadImage('./src/assets/marketplace/icons/attack.png'),
-  statArmor: await loadImage('./src/assets/marketplace/icons/armor.png'),
-  statBless: await loadImage('./src/assets/marketplace/icons/bless.png'),
   experience: await loadImage('./src/assets/experience/1.png'),
   negativeExperience: await loadImage('./src/assets/experience/2.png'),
   playerInfo: await loadImage('./src/assets/player/1.png'),
@@ -177,13 +173,15 @@ export async function createItemListImage (items: IOfferItemDocument[], pageStri
 
     for (const [key, value] of stats) {
       if (value > 0) {
+        const keyStr = 'stat' + capitalizeFirstLetter(key)
+
         ctx.fillStyle = '#ff8269'
         ctx.drawImage(
-          cachedImages[key],
-          statsStringLength + 30 + (textSize.width + 120) - (cachedImages[key].naturalWidth / 2) * 0.02,
-          193 + index * 52 - (cachedImages[key].naturalHeight / 2) * 0.02,
-          cachedImages[key].naturalWidth * 0.02,
-          cachedImages[key].naturalHeight * 0.02
+          cachedImages[keyStr],
+          statsStringLength + 30 + (textSize.width + 120) - (cachedImages[keyStr].naturalWidth / 2) * 0.02,
+          193 + index * 52 - (cachedImages[keyStr].naturalHeight / 2) * 0.02,
+          cachedImages[keyStr].naturalWidth * 0.02,
+          cachedImages[keyStr].naturalHeight * 0.02
         )
 
         ctx.fillText(value.toString(), textSize.width + 135 + 30 + statsStringLength, 198 + index * 52)

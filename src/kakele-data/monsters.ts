@@ -2276,7 +2276,7 @@ export default [
     health: '2,000,000',
     gold: '25,000',
     loot: 'Bat Wing, Elder Vampire Armor, Elder Vampire Axe, Elder Vampire Brooch, Elder Vampire Shield, Supreme Health Bottle, Supreme Mana Bottle',
-    name: { english: 'Orpheus', spanish: 'El Rey Helado', polish: 'Król Mrozu', portuguese: 'O Rei Gelado' },
+    name: { english: 'Orpheus', spanish: 'Orpheus', polish: 'Orpheus', portuguese: 'Orpheus' },
     boss: true
   },
   {
@@ -2286,7 +2286,7 @@ export default [
     health: '2,500,000',
     gold: '50,000',
     loot: 'Rubrachamas Armor, Rubrachamas Boots, Rubrachamas Helmet, Rubrachamas Legs, Supreme Health Bottle, Supreme Mana Bottle, Ultimate Health Bottle, Ultimate Mana Bottle',
-    name: { english: 'Rubrachamas', spanish: 'Orpheus', polish: 'Orpheus', portuguese: 'Orpheus' },
+    name: { english: 'Rubrachamas', spanish: 'Rubrachamas', polish: 'Rubrachamas', portuguese: 'Rubrachamas' },
     boss: true
   },
   {
@@ -2296,7 +2296,7 @@ export default [
     health: '2,000,000',
     gold: '80,000',
     loot: 'Crystal Pickaxe, Supreme Health Bottle, Supreme Mana Bottle, The Winter Shield, The Winter Spear',
-    name: { english: 'The Frost King', spanish: 'Rubrachamas', polish: 'Rubrachamas', portuguese: 'Rubrachamas' },
+    name: { english: 'The Frost King', spanish: 'El Rey Helado', polish: 'Król Mrozu', portuguese: 'O Rei Gelado' },
     boss: true
   },
   {

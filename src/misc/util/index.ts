@@ -12,6 +12,34 @@ import { KAKELE_ITEM_ICONS_URL } from '../constants/index.ts'
 import { type IOfferItemDocument } from '../../database/schemas/marketplace-item.ts'
 import { SupportedLanguagesString, type EquipmentResources } from '../../structures/misc.ts'
 
+export function formatDateTime (date: Date): string {
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = date.getFullYear()
+
+  return `${hours}:${minutes} ${day}/${month}/${year}`
+}
+
+export function generateDarkRandomColorHex (): string {
+  const minBrightness = 20
+  const maxBrightness = 30
+
+  const red = Math.floor(Math.random() * 256)
+  const green = Math.floor(Math.random() * 256)
+  const blue = Math.floor(Math.random() * 256)
+
+  const brightness = (red + green + blue) / 3
+
+  if (brightness >= minBrightness && brightness <= maxBrightness) {
+    const hexColor = `#${(red << 16 | green << 8 | blue).toString(16).padStart(6, '0')}`
+    return hexColor.toUpperCase()
+  } else {
+    return generateDarkRandomColorHex()
+  }
+}
+
 export function calculatePremiumDays (currentDate: Date, coins: number): { premiumDays: number, premiumExpiration: Date } {
   const date = new Date(currentDate)
 

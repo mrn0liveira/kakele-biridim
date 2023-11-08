@@ -43,6 +43,7 @@ import {
 } from '../../components/discordMenu/index.ts'
 import { Guild } from '../../database/schemas/guild.ts'
 import { NOTIFICATION_MODAL_EVENT_INDEX_SELECTION } from '../../components/discordModal/index.ts'
+import { type IUser } from '../../database/schemas/user.ts'
 
 export default new InteractionCommand({
   data: new SlashCommandBuilder()
@@ -79,6 +80,29 @@ export default new InteractionCommand({
     const subcommand = interaction.options.getSubcommand()
 
     let lastInteraction
+
+    const guildPayers =
+    args.guild?.vip.payers?.filter((x: IUser) => {
+      if (typeof x === 'object') {
+        if (new Date() < (x.vip_data?.expiration_date ?? 0)) {
+          return true
+        }
+      }
+      return false
+    }) ?? []
+
+    if (guildPayers.length === 0) {
+      await interaction.editReply({
+        embeds: [
+          new CustomEmbed()
+            .setTitle(client.translate('KAKELE_NOTIFICATIONS_NO_PAYERS_TITLE', args.language))
+            .setDescription(client.translate('KAKELE_NOTIFICATIONS_NO_PAYERS_DESCRIPTION', args.language))
+            .setAuthor({ name: 'Kakele Biridim', iconURL: client.icons.ElderVampireBrooch })
+            .setColor(client.colors.DarkRed)
+        ]
+      })
+      return
+    }
 
     async function eventNotifiction (): Promise<void> {
       await interaction
