@@ -70,5 +70,11 @@ export const KAKELE_BOOST_NAMES = {
     PT: '25% de Comida e Poções',
     ES: '25% de Comida y Pociones',
     PL: '25% Żywności i Mikstur'
+  },
+  ACTIVATE_BESTIARY: {
+    EN: 'Bestiary',
+    PT: 'Bestiário',
+    ES: 'Bestiario',
+    PL: 'Bestiary'
   }
 }

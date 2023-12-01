@@ -68,6 +68,11 @@ export class Logger {
       return
     }
 
+    debugLogger.log({
+      level: 'info',
+      message: args.join(' - ')
+    })
+
     console.log(chalk.hex('#DEADED').bold(args.join(' - ')))
   }
 }
@@ -106,6 +111,18 @@ const errorLogger = winston.createLogger({
   ),
   transports: [
     new winston.transports.File({ filename: 'logs/error.log', level: 'error' })
+  ]
+})
+
+const debugLogger = winston.createLogger({
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.printf(({ message, timestamp }) => {
+      return `${timestamp as string}: ${message as string}`
+    })
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'logs/debug.log', level: 'info' })
   ]
 })
 
