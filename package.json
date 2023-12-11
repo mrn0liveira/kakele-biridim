@@ -6,7 +6,8 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node --esm src/index.ts"
+    "start": "ts-node --esm src/index.ts",
+    "ts-start": "node --loader ts-node/esm src/index.ts"
   },
   "keywords": [],
   "author": "",

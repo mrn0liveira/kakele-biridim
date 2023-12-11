@@ -6,7 +6,7 @@ export default new DiscordEvent({
   name: Events.ClientReady,
   once: true,
   async run(client) {
-    logger.debug('ClientReady', client.user?.username ?? 'Discord Bot' + ' online');
+    logger.info('ClientReady', client.user?.username ?? 'Discord Bot' + ' online');
 
     const activities: Array<(...args: any) => ActivityOptions> = [
       () => {

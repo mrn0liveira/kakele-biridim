@@ -1,20 +1,31 @@
-import { type CommandInteraction, type ClientEvents, Client, Collection, GatewayIntentBits, REST, Routes, ChannelType, type MessageCreateOptions, WebhookClient } from 'discord.js';
-import { fileURLToPath } from 'node:url';
-import { dynamicImport } from '../misc/util/index.ts';
-import type InteractionCommand from './command.ts';
-import { logger } from '../index.ts';
-import { I18n } from 'i18n';
-import type DiscordEvent from './event.ts';
-import { INTERACTION_RATE_LIMIT_ATTEMPTS, INTERACTION_RATE_LIMIT_TIME, KAKELE_ITEM_ICONS_URL, COLORS } from '../misc/constants/index.ts';
-import type { KakeleMonster, KakeleItem, UserRateLimit } from './misc.ts';
-import path from 'path';
-import fs from 'fs';
-import 'dotenv/config';
-import { createMongoConnection } from '../database/index.ts';
-import kakeleEmojis from '../kakele-data/emojis.ts';
-import kakeleItems from '../kakele-data/items.ts';
-import kakeleMonsters from '../kakele-data/monsters.js';
-import '../misc/canvas/index.ts';
+import {
+  type CommandInteraction,
+  type ClientEvents,
+  type MessageCreateOptions,
+  Client,
+  Collection,
+  GatewayIntentBits,
+  REST,
+  Routes,
+  ChannelType,
+  WebhookClient,
+} from "discord.js";
+import { fileURLToPath } from "node:url";
+import { dynamicImport } from "../misc/util/index.ts";
+import type InteractionCommand from "./command.ts";
+import { logger } from "../index.ts";
+import { I18n } from "i18n";
+import type DiscordEvent from "./event.ts";
+import { INTERACTION_RATE_LIMIT_ATTEMPTS, INTERACTION_RATE_LIMIT_TIME, KAKELE_ITEM_ICONS_URL, COLORS } from "../misc/constants/index.ts";
+import type { KakeleMonster, KakeleItem, UserRateLimit } from "./misc.ts";
+import path from "path";
+import fs from "fs";
+import "dotenv/config";
+import { createMongoConnection } from "../database/index.ts";
+import kakeleEmojis from "../kakele-data/emojis.ts";
+import kakeleItems from "../kakele-data/items.ts";
+import kakeleMonsters from "../kakele-data/monsters.js";
+import "../misc/canvas/index.ts";
 
 export default class Biridim extends Client {
   public commands: Collection<string, InteractionCommand>;
@@ -44,9 +55,9 @@ export default class Biridim extends Client {
     this.marketReport = new WebhookClient({ url: process.env.DISCORD_WEBHOOK_MARKET_REPORT as string });
 
     this.i18n = new I18n({
-      defaultLocale: 'EN',
-      locales: ['EN', 'ES', 'PL', 'PT'],
-      directory: path.join('./src', 'i18n'),
+      defaultLocale: "EN",
+      locales: ["EN", "ES", "PL", "PT"],
+      directory: path.join("./src", "i18n"),
       autoReload: true,
     });
   }
@@ -55,24 +66,24 @@ export default class Biridim extends Client {
    * Loads event modules and attaches them to the client.
    */
   private async loadEvents(): Promise<void> {
-    const eventFolderPath = fileURLToPath(new URL('../events', import.meta.url));
+    const eventFolderPath = fileURLToPath(new URL("../events", import.meta.url));
     const eventFolder = fs.readdirSync(eventFolderPath);
 
     for (const folder of eventFolder) {
       const eventPath = path.join(eventFolderPath, folder);
-      const eventFiles = fs.readdirSync(eventPath).filter((file) => file.endsWith('.ts'));
+      const eventFiles = fs.readdirSync(eventPath).filter((file) => file.endsWith(".ts"));
       for (const file of eventFiles) {
         const filePath = path.join(eventPath, file);
 
         const event = (await dynamicImport(filePath)) as DiscordEvent<keyof ClientEvents>;
-        if ('name' in event && 'run' in event) {
+        if ("name" in event && "run" in event) {
           if (event.once) {
             this.once(event.name, (...args) => event.run(this, ...args));
           } else {
             this.on(event.name, (...args) => event.run(this, ...args));
           }
         } else {
-          logger.error('loadEvents', `The event ${filePath} does not have the properties 'name' and 'run'.`);
+          logger.error("loadEvents", `The event ${filePath} does not have the properties 'name' and 'run'.`);
         }
       }
     }
@@ -86,38 +97,40 @@ export default class Biridim extends Client {
     let rest;
 
     if (deploy) {
-      rest = new REST({ version: '10' }).setToken(process.env.DISCORD_CLIENT_TOKEN as string);
+      rest = new REST({ version: "10" }).setToken(process.env.DISCORD_CLIENT_TOKEN as string);
     }
 
-    const commandsFolderPath = fileURLToPath(new URL('../commands', import.meta.url));
-    const globalCommands: Array<InteractionCommand['data']> = [];
+    const commandsFolderPath = fileURLToPath(new URL("../commands", import.meta.url));
+    const globalCommands: Array<InteractionCommand["data"]> = [];
 
     const commandFolders = fs.readdirSync(commandsFolderPath);
 
     for (const folderName of commandFolders) {
       const commandFolderPath = path.join(commandsFolderPath, folderName);
-      const commandFiles = fs.readdirSync(commandFolderPath).filter((fileName) => fileName.endsWith('.ts'));
+      const commandFiles = fs.readdirSync(commandFolderPath).filter((fileName) => fileName.endsWith(".ts"));
 
       for (const fileName of commandFiles) {
         const filePath = path.join(commandFolderPath, fileName);
 
         const command = (await dynamicImport(filePath)) as InteractionCommand;
 
-        if ('data' in command && 'run' in command) {
+        if ("data" in command && "run" in command) {
           this.commands.set(command.data.name, command);
 
           if (deploy) {
             // fix later
             if (command.options.guilds.length > 0) {
               for (const guild of command.options.guilds) {
-                await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID as string, guild), { body: [command.data] }).catch(() => {});
+                await rest
+                  .put(Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID as string, guild), { body: [command.data] })
+                  .catch(() => {});
               }
             } else {
               globalCommands.push(command.data);
             }
           }
         } else {
-          logger.error('loadInteractionCommands', `The command ${filePath} does not have the properties 'data' and 'run'.`);
+          logger.error("loadInteractionCommands", `The command ${filePath} does not have the properties 'data' and 'run'.`);
         }
       }
     }
@@ -136,9 +149,9 @@ export default class Biridim extends Client {
     let rest;
 
     if (deploy) {
-      rest = new REST({ version: '10' }).setToken(process.env.DISCORD_CLIENT_TOKEN as string);
+      rest = new REST({ version: "10" }).setToken(process.env.DISCORD_CLIENT_TOKEN as string);
     }
-    const commandsFolderPath = fileURLToPath(new URL('../commands', import.meta.url));
+    const commandsFolderPath = fileURLToPath(new URL("../commands", import.meta.url));
 
     const reloadCommandModule = async (modulePath: string): Promise<void> => {
       const cacheBustingModulePath = `${modulePath}?update=${Date.now()}`;
@@ -164,8 +177,8 @@ export default class Biridim extends Client {
 
         if (itemStats.isDirectory()) {
           await readFolder(itemPath);
-        } else if (itemStats.isFile() && item.endsWith('.ts')) {
-          const commandFileName = path.basename(item, '.ts');
+        } else if (itemStats.isFile() && item.endsWith(".ts")) {
+          const commandFileName = path.basename(item, ".ts");
           if (commandFileName === command) {
             await reloadCommandModule(itemPath);
           }
@@ -198,14 +211,14 @@ export default class Biridim extends Client {
 
     if (user.attempts >= INTERACTION_RATE_LIMIT_ATTEMPTS) {
       await interaction.reply({
-        content: 'You have exceeded the rate limit.',
+        content: "You have exceeded the rate limit.",
         ephemeral: true,
       });
       return false;
     }
 
     if (user.attempts >= INTERACTION_RATE_LIMIT_TIME - 1) {
-      logger.error('handleInteractionRateLimit', `The user ${interaction.user.id} has reached the rate limit.`);
+      logger.error("handleInteractionRateLimit", `The user ${interaction.user.id} has reached the rate limit.`);
     }
 
     this.interactionRateLimit.set(interaction.user.id, {
@@ -228,7 +241,7 @@ export default class Biridim extends Client {
         await channel.send(message);
       }
     } catch (err) {
-      logger.error('sendMessageToGuildChannel', err);
+      logger.error("sendMessageToGuildChannel", err);
     }
   }
 
@@ -243,7 +256,7 @@ export default class Biridim extends Client {
       const user = await this.users.fetch(id);
       await user.send(message);
     } catch (err) {
-      logger.error('sendMessageToUser', err);
+      logger.error("sendMessageToUser", err);
     }
   }
 
@@ -278,11 +291,11 @@ export default class Biridim extends Client {
    * @returns The corresponding emoji for the item.
    */
   public getKakeleItemEmoji(item: string): string {
-    const itemNameWithoutSpecialChars = item.replace(/[^A-Z0-9]/gi, '');
+    const itemNameWithoutSpecialChars = item.replace(/[^A-Z0-9]/gi, "");
 
     const emoji = this.kakeleEmojis.find((x) => x.name === itemNameWithoutSpecialChars);
 
-    return emoji !== undefined ? `<:${emoji.name}:${emoji.id}>` : '<:marketStats:1128425449853308969>';
+    return emoji !== undefined ? `<:${emoji.name}:${emoji.id}>` : "<:marketStats:1128425449853308969>";
   }
 
   /**
@@ -297,13 +310,13 @@ export default class Biridim extends Client {
 
   public async start(): Promise<void> {
     console.clear();
-    logger.debug('Client starting...');
+    logger.debug("Client starting...");
 
     await this.loadInteractionCommands(true);
     await this.loadEvents();
     await createMongoConnection();
 
-    global.rankingBlacklist = []
+    global.rankingBlacklist = [];
 
     this.login(process.env.DISCORD_CLIENT_TOKEN).catch((e) => {
       logger.error(e);

@@ -366,7 +366,7 @@ async function notifyBoosts(guilds: IGuild[]): Promise<void> {
 
         for (const guild of filteredGuilds) {
           if (guild.payers) {
-            logger.debug("notifyBoosts", boost.id, guild.id, boost.server, boost);
+            logger.debug("notifyBoosts", boost.id, guild.id, boost.server);
 
             const webhookClient = new WebhookClient({ url: guild.webhook });
             webhookClient

@@ -70,7 +70,7 @@ async function getKakeleWeekly(): Promise<void> {
 
     global.weeklyPlayerData = weeklyData;
 
-    logger.debug('Kakele weekly player data updated');
+    logger.info('Kakele weekly player data updated');
   }
 }
 
@@ -99,7 +99,7 @@ async function getKakeleDaily(): Promise<void> {
 
     global.dailyPlayerData = dailyData;
 
-    logger.debug('Kakele daily player data updated');
+    logger.info('Kakele daily player data updated');
   }
 }
 

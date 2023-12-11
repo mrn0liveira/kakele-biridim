@@ -91,14 +91,14 @@ async function getPlayerData(): Promise<void> {
         global.todayPlayerDataNames = global.todayPlayerData.map((x) => x.name);
       }
 
-      logger.debug('Kakele player data updated');
+      logger.info('Kakele player data updated');
     } catch (error) {
       logger.error('Failed to update kakele player data', error);
     }
   } else if (global.todayPlayerData === undefined || global.todayPlayerData?.length === 0) {
     const data = await require('../../../data/' + String(file));
 
-    logger.debug('Kakele local player data loaded');
+    logger.info('Kakele local player data loaded');
 
     global.todayPlayerData = data;
     global.todayPlayerDataNames = global.todayPlayerData.map((x) => x.name);

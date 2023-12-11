@@ -12,7 +12,7 @@ import {
   type CharacterData,
   type SupportedLanguagesString,
   type KakeleItem,
-  type SupportedLanguages,
+  SupportedLanguages,
 } from "../../structures/misc.ts";
 import { capitalizeFirstLetter, getLevel } from "../../misc/util/index.ts";
 import { KAKELE_BOOST_NAMES } from "../../misc/constants/index.ts";
@@ -38,13 +38,14 @@ export function PLAYER_RESULT_SELECTION_MENU(data: Array<{ item: CharacterData }
   return menu;
 }
 
-export function MONSTER_RESULT_SELECTION_MENU(
-  data: Array<{ item: KakeleMonster }>,
-  language: SupportedLanguagesString
-): StringSelectMenuBuilder {
+export function MONSTER_RESULT_SELECTION_MENU(data: Array<{ item: KakeleMonster }>, languageKey: string): StringSelectMenuBuilder {
   const options: StringSelectMenuOptionBuilder[] = [];
   data.forEach((option, index) => {
-    options.push(new StringSelectMenuOptionBuilder().setValue(String(index)).setLabel(option.item.name[language]));
+    options.push(
+      new StringSelectMenuOptionBuilder()
+        .setValue(String(index))
+        .setLabel(option.item[languageKey])
+    );
   });
 
   const menu = new StringSelectMenuBuilder().setCustomId("MONSTER_RESULT_SELECTION_MENU").setPlaceholder("...").addOptions(options);
