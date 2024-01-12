@@ -83,9 +83,14 @@ const premiumLogger = winston.createLogger({
     winston.format.timestamp(),
     winston.format.printf(({ message, timestamp }) => {
       return `${timestamp as string}: ${message as string}`;
-    })
+    }),
   ),
-  transports: [new winston.transports.File({ filename: "logs/premium.log", level: "info" })],
+  transports: [
+    new winston.transports.File({
+      filename: "logs/premium.log",
+      level: "info",
+    }),
+  ],
 });
 
 const auditLogger = winston.createLogger({
@@ -93,9 +98,11 @@ const auditLogger = winston.createLogger({
     winston.format.timestamp(),
     winston.format.printf(({ message, timestamp }) => {
       return `${timestamp as string}: ${message as string}`;
-    })
+    }),
   ),
-  transports: [new winston.transports.File({ filename: "logs/audit.log", level: "info" })],
+  transports: [
+    new winston.transports.File({ filename: "logs/audit.log", level: "info" }),
+  ],
 });
 
 const errorLogger = winston.createLogger({
@@ -103,9 +110,11 @@ const errorLogger = winston.createLogger({
     winston.format.timestamp(),
     winston.format.printf(({ message, timestamp }) => {
       return `${timestamp as string}: ${message as string}`;
-    })
+    }),
   ),
-  transports: [new winston.transports.File({ filename: "logs/error.log", level: "error" })],
+  transports: [
+    new winston.transports.File({ filename: "logs/error.log", level: "error" }),
+  ],
 });
 
 const debugLogger = winston.createLogger({
@@ -113,9 +122,11 @@ const debugLogger = winston.createLogger({
     winston.format.timestamp(),
     winston.format.printf(({ message, timestamp }) => {
       return `${timestamp as string}: ${message as string}`;
-    })
+    }),
   ),
-  transports: [new winston.transports.File({ filename: "logs/debug.log", level: "info" })],
+  transports: [
+    new winston.transports.File({ filename: "logs/debug.log", level: "info" }),
+  ],
 });
 
 const generalLogger = winston.createLogger({
@@ -123,7 +134,7 @@ const generalLogger = winston.createLogger({
     winston.format.timestamp(),
     winston.format.printf(({ message, timestamp }) => {
       return `${timestamp as string}: ${message as string}`;
-    })
+    }),
   ),
   transports: [
     new winston.transports.DailyRotateFile({

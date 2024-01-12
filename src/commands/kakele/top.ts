@@ -1,9 +1,21 @@
-import { type ChatInputCommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import {
+  type ChatInputCommandInteraction,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+} from "discord.js";
 import InteractionCommand from "../../structures/command.ts";
-import { type SupportedLanguages, type CharacterData, type InteractionArgs } from "../../structures/misc.ts";
+import {
+  type SupportedLanguages,
+  type CharacterData,
+  type InteractionArgs,
+} from "../../structures/misc.ts";
 import fs from "fs";
 
-import { CustomEmbed, capitalizeFirstLetter, getLevel } from "../../misc/util/index.ts";
+import {
+  CustomEmbed,
+  capitalizeFirstLetter,
+  getLevel,
+} from "../../misc/util/index.ts";
 
 import { client, logger } from "../../index.ts";
 
@@ -17,7 +29,7 @@ export async function createRankingImage(
   yesterdayDdata: CharacterData[],
   category: string,
   server: string,
-  language: SupportedLanguages
+  language: SupportedLanguages,
 ): Promise<Canvas.Canvas> {
   function getVocationAttribute(): string {
     switch (category) {
@@ -70,15 +82,23 @@ export async function createRankingImage(
     id: categories.indexOf(category),
   };
 
-  const canvas = server === "global" ? Canvas.createCanvas(1280, 720) : Canvas.createCanvas(1136, 720);
+  const canvas =
+    server === "global"
+      ? Canvas.createCanvas(1280, 720)
+      : Canvas.createCanvas(1136, 720);
 
-  const background = server === "global" ? await Canvas.loadImage("./src/assets/top/1.png") : await Canvas.loadImage("./src/assets/top/2.png");
+  const background =
+    server === "global"
+      ? await Canvas.loadImage("./src/assets/top/1.png")
+      : await Canvas.loadImage("./src/assets/top/2.png");
 
   const ctx = canvas.getContext("2d");
 
   ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-  const categoryIcon = await Canvas.loadImage(`./src/assets/top/${category}.png`);
+  const categoryIcon = await Canvas.loadImage(
+    `./src/assets/top/${category}.png`,
+  );
 
   ctx.drawImage(categoryIcon, 10, 600, 128, 128);
 
@@ -87,7 +107,11 @@ export async function createRankingImage(
   ctx.font = "25pt Teko";
   ctx.fillStyle = "#03a5fc";
 
-  ctx.fillText(client.translate("OFFICIAL_WEBSITE_AD", language).toUpperCase(), 30, 65);
+  ctx.fillText(
+    client.translate("OFFICIAL_WEBSITE_AD", language).toUpperCase(),
+    30,
+    65,
+  );
 
   ctx.font = "35pt Teko";
 
@@ -141,7 +165,7 @@ export async function createRankingImage(
         locale: language,
       }),
       480,
-      53
+      53,
     );
 
     ctx.textAlign = "center";
@@ -154,10 +178,14 @@ export async function createRankingImage(
         locale: language,
       }),
       910,
-      53
+      53,
     );
 
-    ctx.fillText(client.i18n.__({ phrase: "RANKING_LEADERBOARD_LEVEL", locale: language }), 1040, 53);
+    ctx.fillText(
+      client.i18n.__({ phrase: "RANKING_LEADERBOARD_LEVEL", locale: language }),
+      1040,
+      53,
+    );
 
     if (server === "global") {
       ctx.fillText(
@@ -166,7 +194,7 @@ export async function createRankingImage(
           locale: language,
         }),
         1170,
-        53
+        53,
       );
     }
 
@@ -176,15 +204,31 @@ export async function createRankingImage(
 
     for (const player of formatted.slice(0, 30)) {
       if (yesterdayDdata) {
-        const yesterdayPlayerIndex = yesterdayFormatted.findIndex((p) => p.name === player.name && p.server === player.server && p.vocation === player.vocation);
-        const playerIndex = formatted.findIndex((p) => p.name === player.name && p.server === player.server && p.vocation === player.vocation);
+        const yesterdayPlayerIndex = yesterdayFormatted.findIndex(
+          (p) =>
+            p.name === player.name &&
+            p.server === player.server &&
+            p.vocation === player.vocation,
+        );
+        const playerIndex = formatted.findIndex(
+          (p) =>
+            p.name === player.name &&
+            p.server === player.server &&
+            p.vocation === player.vocation,
+        );
 
         ctx.font = "10px HelveticaBold";
 
-        if (yesterdayPlayerIndex === playerIndex && !Number.isNaN(playerIndex)) {
+        if (
+          yesterdayPlayerIndex === playerIndex &&
+          !Number.isNaN(playerIndex)
+        ) {
           ctx.fillStyle = "#ebd834";
           ctx.fillText("▬ 0", 420, y - 2);
-        } else if (!Number.isNaN(yesterdayPlayerIndex) && playerIndex < yesterdayPlayerIndex) {
+        } else if (
+          !Number.isNaN(yesterdayPlayerIndex) &&
+          playerIndex < yesterdayPlayerIndex
+        ) {
           ctx.fillStyle = "#6ad141";
           ctx.fillText(`▲ ${yesterdayPlayerIndex - playerIndex}`, 420, y - 2);
         } else {
@@ -193,7 +237,15 @@ export async function createRankingImage(
             ctx.fillText(`▼ 0`, 420, y - 2);
           } else {
             ctx.fillStyle = "#d65f47";
-            ctx.fillText(`▼ ${Number.isNaN(playerIndex) || Number.isNaN(yesterdayPlayerIndex) ? 0 : playerIndex - yesterdayPlayerIndex}`, 420, y - 2);
+            ctx.fillText(
+              `▼ ${
+                Number.isNaN(playerIndex) || Number.isNaN(yesterdayPlayerIndex)
+                  ? 0
+                  : playerIndex - yesterdayPlayerIndex
+              }`,
+              420,
+              y - 2,
+            );
           }
         }
       }
@@ -232,11 +284,23 @@ export async function createRankingImage(
           break;
       }
 
-      if (fs.existsSync(`./src/assets/player/guilds/${player.guild}-${player.server ?? ""}.png`)) {
-        const avatar = await Canvas.loadImage(`./src/assets/player/guilds/${player.guild}-${player.server ?? ""}.png`);
+      if (
+        fs.existsSync(
+          `./src/assets/player/guilds/${player.guild}-${
+            player.server ?? ""
+          }.png`,
+        )
+      ) {
+        const avatar = await Canvas.loadImage(
+          `./src/assets/player/guilds/${player.guild}-${
+            player.server ?? ""
+          }.png`,
+        );
         ctx.drawImage(avatar, 465, y - 14, 16, 16);
       } else {
-        const avatar = await Canvas.loadImage("./src/assets/player/guilds/default.png");
+        const avatar = await Canvas.loadImage(
+          "./src/assets/player/guilds/default.png",
+        );
         ctx.drawImage(avatar, 465, y - 14, 16, 16);
       }
 
@@ -252,9 +316,17 @@ export async function createRankingImage(
 
       ctx.fillText(new Intl.NumberFormat().format(player[category]), 730, y);
 
-      ctx.fillText(capitalizeFirstLetter(player.vocation.toLowerCase()), 910, y);
+      ctx.fillText(
+        capitalizeFirstLetter(player.vocation.toLowerCase()),
+        910,
+        y,
+      );
 
-      ctx.fillText(new Intl.NumberFormat().format(getLevel(parseInt(player.experience))), 1040, y);
+      ctx.fillText(
+        new Intl.NumberFormat().format(getLevel(parseInt(player.experience))),
+        1040,
+        y,
+      );
 
       if (server === "global") {
         ctx.fillStyle = "#d4efff";
@@ -287,7 +359,7 @@ export async function createRankingImage(
         locale: language,
       }),
       470,
-      53
+      53,
     );
 
     ctx.textAlign = "center";
@@ -298,10 +370,14 @@ export async function createRankingImage(
         locale: language,
       }),
       730,
-      53
+      53,
     );
 
-    ctx.fillText(client.i18n.__({ phrase: "RANKING_LEADERBOARD_LEVEL", locale: language }), 890, 53);
+    ctx.fillText(
+      client.i18n.__({ phrase: "RANKING_LEADERBOARD_LEVEL", locale: language }),
+      890,
+      53,
+    );
 
     ctx.fillText(
       client.i18n.__({
@@ -309,7 +385,7 @@ export async function createRankingImage(
         locale: language,
       }),
       1030,
-      53
+      53,
     );
 
     if (server === "global") {
@@ -319,7 +395,7 @@ export async function createRankingImage(
           locale: language,
         }),
         1170,
-        53
+        53,
       );
     }
 
@@ -328,15 +404,28 @@ export async function createRankingImage(
     ctx.globalAlpha = 0.7;
 
     for (const player of formatted.slice(0, 30)) {
-      const yesterdayPlayerIndex = yesterdayFormatted.findIndex((p) => p.name === player.name && p.server === player.server && p.vocation === player.vocation);
-      const playerIndex = formatted.findIndex((p) => p.name === player.name && p.server === player.server && p.vocation === player.vocation);
+      const yesterdayPlayerIndex = yesterdayFormatted.findIndex(
+        (p) =>
+          p.name === player.name &&
+          p.server === player.server &&
+          p.vocation === player.vocation,
+      );
+      const playerIndex = formatted.findIndex(
+        (p) =>
+          p.name === player.name &&
+          p.server === player.server &&
+          p.vocation === player.vocation,
+      );
 
       ctx.font = "10px HelveticaBold";
 
       if (yesterdayPlayerIndex === playerIndex && !Number.isNaN(playerIndex)) {
         ctx.fillStyle = "#ebd834";
         ctx.fillText("▬ 0", 420, y - 2);
-      } else if (!Number.isNaN(yesterdayPlayerIndex) && playerIndex < yesterdayPlayerIndex) {
+      } else if (
+        !Number.isNaN(yesterdayPlayerIndex) &&
+        playerIndex < yesterdayPlayerIndex
+      ) {
         ctx.fillStyle = "#6ad141";
         ctx.fillText(`▲ ${yesterdayPlayerIndex - playerIndex}`, 420, y - 2);
       } else {
@@ -345,7 +434,15 @@ export async function createRankingImage(
           ctx.fillText(`▼ 0`, 420, y - 2);
         } else {
           ctx.fillStyle = "#d65f47";
-          ctx.fillText(`▼ ${Number.isNaN(playerIndex) || Number.isNaN(yesterdayPlayerIndex) ? 0 : playerIndex - yesterdayPlayerIndex}`, 420, y - 2);
+          ctx.fillText(
+            `▼ ${
+              Number.isNaN(playerIndex) || Number.isNaN(yesterdayPlayerIndex)
+                ? 0
+                : playerIndex - yesterdayPlayerIndex
+            }`,
+            420,
+            y - 2,
+          );
         }
       }
 
@@ -383,11 +480,23 @@ export async function createRankingImage(
           break;
       }
 
-      if (fs.existsSync(`./src/assets/player/guilds/${player.guild}-${player.server ?? ""}.png`)) {
-        const avatar = await Canvas.loadImage(`./src/assets/player/guilds/${player.guild}-${player.server ?? ""}.png`);
+      if (
+        fs.existsSync(
+          `./src/assets/player/guilds/${player.guild}-${
+            player.server ?? ""
+          }.png`,
+        )
+      ) {
+        const avatar = await Canvas.loadImage(
+          `./src/assets/player/guilds/${player.guild}-${
+            player.server ?? ""
+          }.png`,
+        );
         ctx.drawImage(avatar, 465, y - 14, 16, 16);
       } else {
-        const avatar = await Canvas.loadImage("./src/assets/player/guilds/default.png");
+        const avatar = await Canvas.loadImage(
+          "./src/assets/player/guilds/default.png",
+        );
         ctx.drawImage(avatar, 465, y - 14, 16, 16);
       }
 
@@ -401,11 +510,23 @@ export async function createRankingImage(
 
       ctx.textAlign = "center";
 
-      ctx.fillText(new Intl.NumberFormat().format(parseInt(player.experience)), 730, y);
+      ctx.fillText(
+        new Intl.NumberFormat().format(parseInt(player.experience)),
+        730,
+        y,
+      );
 
-      ctx.fillText(new Intl.NumberFormat().format(getLevel(parseInt(player.experience))), 890, y);
+      ctx.fillText(
+        new Intl.NumberFormat().format(getLevel(parseInt(player.experience))),
+        890,
+        y,
+      );
 
-      ctx.fillText(new Intl.NumberFormat().format(player[getVocationAttribute()]), 1030, y);
+      ctx.fillText(
+        new Intl.NumberFormat().format(player[getVocationAttribute()]),
+        1030,
+        y,
+      );
 
       if (server === "global") {
         ctx.fillStyle = "#d4efff";
@@ -555,9 +676,9 @@ export default new InteractionCommand({
               "pt-BR": "Caçador",
               pl: "Myśliwy",
             },
-          }
+          },
         )
-        .setRequired(true)
+        .setRequired(true),
     )
 
     .addStringOption((option) =>
@@ -668,34 +789,54 @@ export default new InteractionCommand({
               "pt-BR": "Ranking Global",
               pl: "Ranking Globalny",
             },
-          }
+          },
         )
-        .setRequired(true)
+        .setRequired(true),
     ),
 
   options: {
-    clientPermissions: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.UseExternalEmojis, PermissionFlagsBits.AttachFiles],
+    clientPermissions: [
+      PermissionFlagsBits.SendMessages,
+      PermissionFlagsBits.UseExternalEmojis,
+      PermissionFlagsBits.AttachFiles,
+    ],
     cooldown: 3,
     guilds: [],
     premium: false,
     ephemeral: false,
   },
 
-  async run(interaction: ChatInputCommandInteraction<"cached">, args: InteractionArgs) {
+  async run(
+    interaction: ChatInputCommandInteraction<"cached">,
+    args: InteractionArgs,
+  ) {
     const category = interaction.options.getString("category") ?? "";
 
     const server = interaction.options.getString("server") ?? "";
 
-    const serverData: CharacterData[] = server === "global" ? global.todayPlayerData : global.todayPlayerData.filter((x) => x.server === server);
+    const serverData: CharacterData[] =
+      server === "global"
+        ? global.todayPlayerData
+        : global.todayPlayerData.filter((x) => x.server === server);
 
-    const yesterdayServerData: CharacterData[] = server === "global" ? global.weeklyPlayerData : global.weeklyPlayerData.filter((x) => x.server === server);
+    const yesterdayServerData: CharacterData[] =
+      server === "global"
+        ? global.weeklyPlayerData
+        : global.weeklyPlayerData.filter((x) => x.server === server);
 
     if (serverData === undefined || serverData?.length === 0) {
       return await interaction.editReply({
         embeds: [
           new CustomEmbed()
-            .setTitle(client.translate("RANKING_UNKNOWN_SERVER_DATA", args.language))
-            .setDescription(client.translate("RANKING_UNKNOWN_SERVER_DATA_DESCRIPTION", args.language))
+            .setTitle(
+              client.translate("RANKING_UNKNOWN_SERVER_DATA", args.language),
+            )
+            .setDescription(
+              client.translate(
+                "RANKING_UNKNOWN_SERVER_DATA_DESCRIPTION",
+                args.language,
+              ),
+            )
             .setAuthor({
               name: "Kakele Biridim",
               iconURL: client.icons.ElderVampireBrooch,
@@ -709,19 +850,41 @@ export default new InteractionCommand({
       await interaction.editReply({
         embeds: [
           new CustomEmbed()
-            .setTitle(client.translate("RANKING_NO_PROGRESS_SERVER_DATA", args.language))
-            .setDescription(client.translate("RANKING_NO_PROGRESS_SERVER_DATA_DESCRIPTION", args.language))
-            .setAuthor({ name: "Kakele Biridim", iconURL: client.icons.ElderVampireBrooch })
+            .setTitle(
+              client.translate(
+                "RANKING_NO_PROGRESS_SERVER_DATA",
+                args.language,
+              ),
+            )
+            .setDescription(
+              client.translate(
+                "RANKING_NO_PROGRESS_SERVER_DATA_DESCRIPTION",
+                args.language,
+              ),
+            )
+            .setAuthor({
+              name: "Kakele Biridim",
+              iconURL: client.icons.ElderVampireBrooch,
+            })
             .setColor(client.colors.DarkRed),
         ],
       });
 
-      logger.error(`${interaction.commandName} No progress on ${server} server`);
+      logger.error(
+        `${interaction.commandName} No progress on ${server} server`,
+      );
 
       return;
     }
 
-    const image = await createRankingImage(client, serverData, yesterdayServerData, category, server, args.language);
+    const image = await createRankingImage(
+      client,
+      serverData,
+      yesterdayServerData,
+      category,
+      server,
+      args.language,
+    );
 
     await interaction.editReply({
       files: [

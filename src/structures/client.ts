@@ -16,7 +16,12 @@ import type InteractionCommand from "./command.ts";
 import { logger } from "../index.ts";
 import { I18n } from "i18n";
 import type DiscordEvent from "./event.ts";
-import { INTERACTION_RATE_LIMIT_ATTEMPTS, INTERACTION_RATE_LIMIT_TIME, KAKELE_ITEM_ICONS_URL, COLORS } from "../misc/constants/index.ts";
+import {
+  INTERACTION_RATE_LIMIT_ATTEMPTS,
+  INTERACTION_RATE_LIMIT_TIME,
+  KAKELE_ITEM_ICONS_URL,
+  COLORS,
+} from "../misc/constants/index.ts";
 import type { KakeleMonster, KakeleItem, UserRateLimit } from "./misc.ts";
 import path from "path";
 import fs from "fs";
@@ -41,7 +46,11 @@ export default class Biridim extends Client {
 
   constructor() {
     super({
-      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+      ],
     });
     this.commands = new Collection<string, InteractionCommand>();
     this.interactionRateLimit = new Collection<string, UserRateLimit>();
@@ -52,7 +61,9 @@ export default class Biridim extends Client {
     this.kakeleMonsters = kakeleMonsters;
     this.interactionCooldown = new Collection<string, number>();
 
-    this.marketReport = new WebhookClient({ url: process.env.DISCORD_WEBHOOK_MARKET_REPORT as string });
+    this.marketReport = new WebhookClient({
+      url: process.env.DISCORD_WEBHOOK_MARKET_REPORT as string,
+    });
 
     this.i18n = new I18n({
       defaultLocale: "EN",
@@ -66,16 +77,22 @@ export default class Biridim extends Client {
    * Loads event modules and attaches them to the client.
    */
   private async loadEvents(): Promise<void> {
-    const eventFolderPath = fileURLToPath(new URL("../events", import.meta.url));
+    const eventFolderPath = fileURLToPath(
+      new URL("../events", import.meta.url),
+    );
     const eventFolder = fs.readdirSync(eventFolderPath);
 
     for (const folder of eventFolder) {
       const eventPath = path.join(eventFolderPath, folder);
-      const eventFiles = fs.readdirSync(eventPath).filter((file) => file.endsWith(".ts"));
+      const eventFiles = fs
+        .readdirSync(eventPath)
+        .filter((file) => file.endsWith(".ts"));
       for (const file of eventFiles) {
         const filePath = path.join(eventPath, file);
 
-        const event = (await dynamicImport(filePath)) as DiscordEvent<keyof ClientEvents>;
+        const event = (await dynamicImport(filePath)) as DiscordEvent<
+          keyof ClientEvents
+        >;
         if ("name" in event && "run" in event) {
           if (event.once) {
             this.once(event.name, (...args) => event.run(this, ...args));
@@ -83,7 +100,10 @@ export default class Biridim extends Client {
             this.on(event.name, (...args) => event.run(this, ...args));
           }
         } else {
-          logger.error("loadEvents", `The event ${filePath} does not have the properties 'name' and 'run'.`);
+          logger.error(
+            "loadEvents",
+            `The event ${filePath} does not have the properties 'name' and 'run'.`,
+          );
         }
       }
     }
@@ -97,17 +117,23 @@ export default class Biridim extends Client {
     let rest;
 
     if (deploy) {
-      rest = new REST({ version: "10" }).setToken(process.env.DISCORD_CLIENT_TOKEN as string);
+      rest = new REST({ version: "10" }).setToken(
+        process.env.DISCORD_CLIENT_TOKEN as string,
+      );
     }
 
-    const commandsFolderPath = fileURLToPath(new URL("../commands", import.meta.url));
+    const commandsFolderPath = fileURLToPath(
+      new URL("../commands", import.meta.url),
+    );
     const globalCommands: Array<InteractionCommand["data"]> = [];
 
     const commandFolders = fs.readdirSync(commandsFolderPath);
 
     for (const folderName of commandFolders) {
       const commandFolderPath = path.join(commandsFolderPath, folderName);
-      const commandFiles = fs.readdirSync(commandFolderPath).filter((fileName) => fileName.endsWith(".ts"));
+      const commandFiles = fs
+        .readdirSync(commandFolderPath)
+        .filter((fileName) => fileName.endsWith(".ts"));
 
       for (const fileName of commandFiles) {
         const filePath = path.join(commandFolderPath, fileName);
@@ -122,7 +148,13 @@ export default class Biridim extends Client {
             if (command.options.guilds.length > 0) {
               for (const guild of command.options.guilds) {
                 await rest
-                  .put(Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID as string, guild), { body: [command.data] })
+                  .put(
+                    Routes.applicationGuildCommands(
+                      process.env.DISCORD_CLIENT_ID as string,
+                      guild,
+                    ),
+                    { body: [command.data] },
+                  )
                   .catch(() => {});
               }
             } else {
@@ -130,13 +162,19 @@ export default class Biridim extends Client {
             }
           }
         } else {
-          logger.error("loadInteractionCommands", `The command ${filePath} does not have the properties 'data' and 'run'.`);
+          logger.error(
+            "loadInteractionCommands",
+            `The command ${filePath} does not have the properties 'data' and 'run'.`,
+          );
         }
       }
     }
 
     if (globalCommands.length > 0) {
-      await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID as string), { body: globalCommands });
+      await rest.put(
+        Routes.applicationCommands(process.env.DISCORD_CLIENT_ID as string),
+        { body: globalCommands },
+      );
     }
   }
 
@@ -145,13 +183,20 @@ export default class Biridim extends Client {
    * @param command - The name of the command to reload.
    * @param deploy - Whether to deploy the command to Discord.
    */
-  public async reloadInteractionCommand(command: string, deploy: boolean): Promise<void> {
+  public async reloadInteractionCommand(
+    command: string,
+    deploy: boolean,
+  ): Promise<void> {
     let rest;
 
     if (deploy) {
-      rest = new REST({ version: "10" }).setToken(process.env.DISCORD_CLIENT_TOKEN as string);
+      rest = new REST({ version: "10" }).setToken(
+        process.env.DISCORD_CLIENT_TOKEN as string,
+      );
     }
-    const commandsFolderPath = fileURLToPath(new URL("../commands", import.meta.url));
+    const commandsFolderPath = fileURLToPath(
+      new URL("../commands", import.meta.url),
+    );
 
     const reloadCommandModule = async (modulePath: string): Promise<void> => {
       const cacheBustingModulePath = `${modulePath}?update=${Date.now()}`;
@@ -162,7 +207,13 @@ export default class Biridim extends Client {
       if (deploy) {
         if (command.options.guilds.length > 0) {
           for (const guild of command.options.guilds) {
-            await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID as string, guild), { body: command.data });
+            await rest.put(
+              Routes.applicationGuildCommands(
+                process.env.DISCORD_CLIENT_ID as string,
+                guild,
+              ),
+              { body: command.data },
+            );
           }
         }
       }
@@ -194,8 +245,12 @@ export default class Biridim extends Client {
    * @param interaction - The command interaction triggering the rate limit check.
    * @returns Whether the user is within the rate limit.
    */
-  public async handleInteractionRateLimit(interaction: CommandInteraction): Promise<boolean> {
-    const user: UserRateLimit | undefined = this.interactionRateLimit.get(interaction.user.id);
+  public async handleInteractionRateLimit(
+    interaction: CommandInteraction,
+  ): Promise<boolean> {
+    const user: UserRateLimit | undefined = this.interactionRateLimit.get(
+      interaction.user.id,
+    );
 
     if (user === undefined) {
       const newUser: UserRateLimit = {
@@ -218,7 +273,10 @@ export default class Biridim extends Client {
     }
 
     if (user.attempts >= INTERACTION_RATE_LIMIT_TIME - 1) {
-      logger.error("handleInteractionRateLimit", `The user ${interaction.user.id} has reached the rate limit.`);
+      logger.error(
+        "handleInteractionRateLimit",
+        `The user ${interaction.user.id} has reached the rate limit.`,
+      );
     }
 
     this.interactionRateLimit.set(interaction.user.id, {
@@ -233,11 +291,18 @@ export default class Biridim extends Client {
    * @param id - The ID of the channel.
    * @param message - The message content or options.
    */
-  public async sendMessageToGuildChannel(id: string, message: string | MessageCreateOptions): Promise<void> {
+  public async sendMessageToGuildChannel(
+    id: string,
+    message: string | MessageCreateOptions,
+  ): Promise<void> {
     try {
       const channel = await this.channels.fetch(id);
 
-      if (channel !== null && (channel.type === ChannelType.GuildText || channel.type === ChannelType.DM)) {
+      if (
+        channel !== null &&
+        (channel.type === ChannelType.GuildText ||
+          channel.type === ChannelType.DM)
+      ) {
         await channel.send(message);
       }
     } catch (err) {
@@ -251,7 +316,10 @@ export default class Biridim extends Client {
    * @param message - The message content or options.
    */
 
-  public async sendMessageToUser(id: string, message: string | MessageCreateOptions): Promise<void> {
+  public async sendMessageToUser(
+    id: string,
+    message: string | MessageCreateOptions,
+  ): Promise<void> {
     try {
       const user = await this.users.fetch(id);
       await user.send(message);
@@ -266,7 +334,10 @@ export default class Biridim extends Client {
    * @param time - The cooldown duration in milliseconds.
    * @returns The remaining time for the cooldown, or undefined if not in cooldown.
    */
-  public handleInteractionCooldown(identifier: string, time: number): number | undefined {
+  public handleInteractionCooldown(
+    identifier: string,
+    time: number,
+  ): number | undefined {
     if (this.interactionCooldown.has(identifier)) {
       const timeLeft = this.interactionCooldown.get(identifier);
 
@@ -293,9 +364,13 @@ export default class Biridim extends Client {
   public getKakeleItemEmoji(item: string): string {
     const itemNameWithoutSpecialChars = item.replace(/[^A-Z0-9]/gi, "");
 
-    const emoji = this.kakeleEmojis.find((x) => x.name === itemNameWithoutSpecialChars);
+    const emoji = this.kakeleEmojis.find(
+      (x) => x.name === itemNameWithoutSpecialChars,
+    );
 
-    return emoji !== undefined ? `<:${emoji.name}:${emoji.id}>` : "<:marketStats:1128425449853308969>";
+    return emoji !== undefined
+      ? `<:${emoji.name}:${emoji.id}>`
+      : "<:marketStats:1128425449853308969>";
   }
 
   /**

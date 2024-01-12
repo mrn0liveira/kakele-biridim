@@ -1,7 +1,20 @@
-import { type ChatInputCommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import {
+  type ChatInputCommandInteraction,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+} from "discord.js";
 import InteractionCommand from "../../structures/command.ts";
-import { type SupportedLanguages, type CharacterData, type InteractionArgs } from "../../structures/misc.ts";
-import { CustomEmbed, capitalizeFirstLetter, getExperienceToNextLevel, getLevel } from "../../misc/util/index.ts";
+import {
+  type SupportedLanguages,
+  type CharacterData,
+  type InteractionArgs,
+} from "../../structures/misc.ts";
+import {
+  CustomEmbed,
+  capitalizeFirstLetter,
+  getExperienceToNextLevel,
+  getLevel,
+} from "../../misc/util/index.ts";
 import { client, logger } from "../../index.ts";
 import type Biridim from "../../structures/client.ts";
 import { fillMixedText } from "../../misc/canvas/index.ts";
@@ -13,35 +26,52 @@ export async function createDailyLostRankingImage(
   data: CharacterData[],
   server: string,
   language: SupportedLanguages,
-  timestamp: { new: number; old: number }
+  timestamp: { new: number; old: number },
 ): Promise<Canvas> {
   function getProgress(player: CharacterData): number {
-    const experienceToNextLevel = getExperienceToNextLevel(getLevel(Number(player.experience)));
-    return Math.floor((Number(player.progress) / experienceToNextLevel) * 100) / 100;
+    const experienceToNextLevel = getExperienceToNextLevel(
+      getLevel(Number(player.experience)),
+    );
+    return (
+      Math.floor((Number(player.progress) / experienceToNextLevel) * 100) / 100
+    );
   }
 
   const canvasWidth = server === "global" ? 1280 : 1136;
   const canvas = createCanvas(canvasWidth, 720);
   const backgroundImagePath =
-    server === "global" ? "./src/assets/lost-experience/00.png" : "./src/assets/lost-experience/11.png";
+    server === "global"
+      ? "./src/assets/lost-experience/00.png"
+      : "./src/assets/lost-experience/11.png";
   const background = await loadImage(backgroundImagePath);
   const ctx = canvas.getContext("2d");
 
   ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
   const obj = {
-    server: client.i18n.__({ phrase: `TOP_SERVER_${server.toUpperCase()}`, locale: language }),
+    server: client.i18n.__({
+      phrase: `TOP_SERVER_${server.toUpperCase()}`,
+      locale: language,
+    }),
   };
 
   ctx.globalAlpha = 0.8;
 
   ctx.font = "25pt Teko";
   ctx.fillStyle = "#f5ce42";
-  ctx.fillText(client.translate("OFFICIAL_WEBSITE_AD", language).toUpperCase(), 30, 65);
+  ctx.fillText(
+    client.translate("OFFICIAL_WEBSITE_AD", language).toUpperCase(),
+    30,
+    65,
+  );
 
   ctx.font = "35pt Teko";
   ctx.fillStyle = "#d16324";
-  ctx.fillText(client.i18n.__({ phrase: "DAILY_LOST_EXPERIENCE_TITLE", locale: language }), 30, 105);
+  ctx.fillText(
+    client.i18n.__({ phrase: "DAILY_LOST_EXPERIENCE_TITLE", locale: language }),
+    30,
+    105,
+  );
 
   ctx.fillStyle = "#ffecd6";
   ctx.fillText(obj.server, 30, 145);
@@ -56,13 +86,48 @@ export async function createDailyLostRankingImage(
   ctx.fillStyle = "#d16324";
   ctx.font = "21pt Teko";
 
-  ctx.fillText(client.i18n.__({ phrase: "RANKING_LEADERBOARD_NICKNAME", locale: language }), 520, 47);
-  ctx.fillText(client.i18n.__({ phrase: "RANKING_LEADERBOARD_PROGRESS", locale: language }), 720, 47);
-  ctx.fillText(client.i18n.__({ phrase: "RANKING_LEADERBOARD_EXPERIENCE", locale: language }), 880, 47);
-  ctx.fillText(client.i18n.__({ phrase: "RANKING_LEADERBOARD_VOCATION", locale: language }), 1035, 47);
+  ctx.fillText(
+    client.i18n.__({
+      phrase: "RANKING_LEADERBOARD_NICKNAME",
+      locale: language,
+    }),
+    520,
+    47,
+  );
+  ctx.fillText(
+    client.i18n.__({
+      phrase: "RANKING_LEADERBOARD_PROGRESS",
+      locale: language,
+    }),
+    720,
+    47,
+  );
+  ctx.fillText(
+    client.i18n.__({
+      phrase: "RANKING_LEADERBOARD_EXPERIENCE",
+      locale: language,
+    }),
+    880,
+    47,
+  );
+  ctx.fillText(
+    client.i18n.__({
+      phrase: "RANKING_LEADERBOARD_VOCATION",
+      locale: language,
+    }),
+    1035,
+    47,
+  );
 
   if (server === "global") {
-    ctx.fillText(client.i18n.__({ phrase: "RANKING_LEADERBOARD_SERVER", locale: language }), 1170, 47);
+    ctx.fillText(
+      client.i18n.__({
+        phrase: "RANKING_LEADERBOARD_SERVER",
+        locale: language,
+      }),
+      1170,
+      47,
+    );
   }
 
   ctx.textAlign = "start";
@@ -91,9 +156,17 @@ export async function createDailyLostRankingImage(
         break;
     }
 
-    if (fs.existsSync(`./src/assets/player/guilds/${formatted[i].guild}-${formatted[i].server ?? ""}.png`)) {
+    if (
+      fs.existsSync(
+        `./src/assets/player/guilds/${formatted[i].guild}-${
+          formatted[i].server ?? ""
+        }.png`,
+      )
+    ) {
       const avatar = await loadImage(
-        `./src/assets/player/guilds/${formatted[i].guild}-${formatted[i].server ?? ""}.png`
+        `./src/assets/player/guilds/${formatted[i].guild}-${
+          formatted[i].server ?? ""
+        }.png`,
       );
       ctx.drawImage(avatar, 460, y - 14, 16, 16);
     } else {
@@ -111,8 +184,19 @@ export async function createDailyLostRankingImage(
     const progress = getProgress(formatted[i]);
 
     ctx.textAlign = "center";
-    ctx.fillText(new Intl.NumberFormat().format(Number(formatted[i].progress)), 880, y);
-    ctx.fillText(client.i18n.__({ phrase: `TOP_CATEGORY_${formatted[i].vocation}`, locale: language }), 1030, y);
+    ctx.fillText(
+      new Intl.NumberFormat().format(Number(formatted[i].progress)),
+      880,
+      y,
+    );
+    ctx.fillText(
+      client.i18n.__({
+        phrase: `TOP_CATEGORY_${formatted[i].vocation}`,
+        locale: language,
+      }),
+      1030,
+      y,
+    );
 
     if (server === "global") {
       ctx.fillText(capitalizeFirstLetter(formatted[i].server ?? ""), 1170, y);
@@ -124,11 +208,15 @@ export async function createDailyLostRankingImage(
     ctx.fillStyle = "#dbc4ab";
     ctx.font = "12px Helvetica";
 
-    if (!Number.isNaN(Date.parse(new Date(timestamp.old)?.toLocaleDateString()))) {
+    if (
+      !Number.isNaN(Date.parse(new Date(timestamp.old)?.toLocaleDateString()))
+    ) {
       ctx.fillText(new Date(timestamp.old).toUTCString(), 20, 690);
     }
 
-    if (!Number.isNaN(Date.parse(new Date(timestamp.new)?.toLocaleDateString()))) {
+    if (
+      !Number.isNaN(Date.parse(new Date(timestamp.new)?.toLocaleDateString()))
+    ) {
       ctx.fillText(new Date(timestamp.new).toUTCString(), 20, 710);
     }
 
@@ -138,11 +226,19 @@ export async function createDailyLostRankingImage(
     fillMixedText(
       ctx,
       [
-        { text: level.toString(), fillStyle: "#dbc4ab", font: "16px HelveticaBoldMS" },
-        { text: `${progress}`, fillStyle: "#ed2424", font: "12px HelveticaBoldMS" },
+        {
+          text: level.toString(),
+          fillStyle: "#dbc4ab",
+          font: "16px HelveticaBoldMS",
+        },
+        {
+          text: `${progress}`,
+          fillStyle: "#ed2424",
+          font: "12px HelveticaBoldMS",
+        },
       ],
       690,
-      y
+      y,
     );
 
     y += 21;
@@ -269,16 +365,19 @@ export default new InteractionCommand({
               "pt-BR": "Ranking Global",
               pl: "Ranking Globalny",
             },
-          }
+          },
         )
-        .setRequired(true)
+        .setRequired(true),
     )
     .addStringOption((option) =>
-      option.setName("guild").setDescription("The Guild to be filtered").setDescriptionLocalizations({
-        "es-ES": "El gremio a filtrar",
-        "pt-BR": "A Guilda a ser filtrada",
-        pl: "Gildia do przefiltrowania",
-      })
+      option
+        .setName("guild")
+        .setDescription("The Guild to be filtered")
+        .setDescriptionLocalizations({
+          "es-ES": "El gremio a filtrar",
+          "pt-BR": "A Guilda a ser filtrada",
+          pl: "Gildia do przefiltrowania",
+        }),
     ),
   options: {
     clientPermissions: [
@@ -291,7 +390,10 @@ export default new InteractionCommand({
     premium: false,
     ephemeral: false,
   },
-  async run(interaction: ChatInputCommandInteraction<"cached">, args: InteractionArgs) {
+  async run(
+    interaction: ChatInputCommandInteraction<"cached">,
+    args: InteractionArgs,
+  ) {
     const server = interaction.options.getString("server") ?? "";
     const guild = interaction.options.getString("guild")?.toLowerCase() ?? "";
 
@@ -301,7 +403,9 @@ export default new InteractionCommand({
       serverData =
         server === "global"
           ? global.weeklyPlayerData?.slice()
-          : global.weeklyPlayerData?.slice().filter((x) => x.server === server && x.guild === guild);
+          : global.weeklyPlayerData
+              ?.slice()
+              .filter((x) => x.server === server && x.guild === guild);
     } else {
       serverData =
         server === "global"
@@ -309,13 +413,26 @@ export default new InteractionCommand({
           : global.weeklyPlayerData?.slice().filter((x) => x.server === server);
     }
 
-    if (guild.length > 0 && (serverData === undefined || serverData?.length === 0)) {
+    if (
+      guild.length > 0 &&
+      (serverData === undefined || serverData?.length === 0)
+    ) {
       return await interaction.editReply({
         embeds: [
           new CustomEmbed()
-            .setTitle(client.translate("RANKING_NO_DATA_FILTERED", args.language))
-            .setDescription(client.translate("RANKING_NO_DATA_FILTERED_DESCRIPTION", args.language))
-            .setAuthor({ name: "Kakele Biridim", iconURL: client.icons.ElderVampireBrooch })
+            .setTitle(
+              client.translate("RANKING_NO_DATA_FILTERED", args.language),
+            )
+            .setDescription(
+              client.translate(
+                "RANKING_NO_DATA_FILTERED_DESCRIPTION",
+                args.language,
+              ),
+            )
+            .setAuthor({
+              name: "Kakele Biridim",
+              iconURL: client.icons.ElderVampireBrooch,
+            })
             .setColor(client.colors.DarkRed),
         ],
       });
@@ -325,9 +442,19 @@ export default new InteractionCommand({
       return await interaction.editReply({
         embeds: [
           new CustomEmbed()
-            .setTitle(client.translate("RANKING_UNKNOWN_SERVER_DATA", args.language))
-            .setDescription(client.translate("RANKING_UNKNOWN_SERVER_DATA_DESCRIPTION", args.language))
-            .setAuthor({ name: "Kakele Biridim", iconURL: client.icons.ElderVampireBrooch })
+            .setTitle(
+              client.translate("RANKING_UNKNOWN_SERVER_DATA", args.language),
+            )
+            .setDescription(
+              client.translate(
+                "RANKING_UNKNOWN_SERVER_DATA_DESCRIPTION",
+                args.language,
+              ),
+            )
+            .setAuthor({
+              name: "Kakele Biridim",
+              iconURL: client.icons.ElderVampireBrooch,
+            })
             .setColor(client.colors.DarkRed),
         ],
       });
@@ -337,14 +464,29 @@ export default new InteractionCommand({
       await interaction.editReply({
         embeds: [
           new CustomEmbed()
-            .setTitle(client.translate("RANKING_NO_PROGRESS_SERVER_DATA", args.language))
-            .setDescription(client.translate("RANKING_NO_PROGRESS_SERVER_DATA_DESCRIPTION", args.language))
-            .setAuthor({ name: "Kakele Biridim", iconURL: client.icons.ElderVampireBrooch })
+            .setTitle(
+              client.translate(
+                "RANKING_NO_PROGRESS_SERVER_DATA",
+                args.language,
+              ),
+            )
+            .setDescription(
+              client.translate(
+                "RANKING_NO_PROGRESS_SERVER_DATA_DESCRIPTION",
+                args.language,
+              ),
+            )
+            .setAuthor({
+              name: "Kakele Biridim",
+              iconURL: client.icons.ElderVampireBrooch,
+            })
             .setColor(client.colors.DarkRed),
         ],
       });
 
-      logger.error(`${interaction.commandName} No progress on ${server} server`);
+      logger.error(
+        `${interaction.commandName} No progress on ${server} server`,
+      );
 
       return;
     }
@@ -357,7 +499,7 @@ export default new InteractionCommand({
       {
         old: global.weeklyPlayerData.timestamp.old,
         new: global.dailyPlayerData.timestamp.new,
-      }
+      },
     );
 
     await interaction.editReply({

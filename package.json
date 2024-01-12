@@ -6,8 +6,12 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node --esm src/index.ts",
-    "ts-start": "node --loader ts-node/esm src/index.ts"
+    "start": "node --loader ts-node/esm src/index.ts",
+    "prettier": "prettier --write .",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": ">=20.11.0"
   },
   "keywords": [],
   "author": "",

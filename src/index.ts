@@ -11,6 +11,7 @@ export const logger = new Logger(isAppInDevelopment);
   process.on(err, (...args) => {
     if (isAppInDevelopment) {
       console.log(args);
+      return;
     }
 
     logger.error(err, ...args);

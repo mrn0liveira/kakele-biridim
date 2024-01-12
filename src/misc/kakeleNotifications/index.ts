@@ -1,6 +1,14 @@
 import axios from "axios";
-import { GIST_KAKELE_BOOSTS, GIST_KAKELE_EVENTS, KAKELE_BOOST_NAMES } from "../constants/index.ts";
-import { SupportedLanguages, type KakeleEvent, type KakeleBoost } from "../../structures/misc.ts";
+import {
+  GIST_KAKELE_BOOSTS,
+  GIST_KAKELE_EVENTS,
+  KAKELE_BOOST_NAMES,
+} from "../constants/index.ts";
+import {
+  SupportedLanguages,
+  type KakeleEvent,
+  type KakeleBoost,
+} from "../../structures/misc.ts";
 import Event, { type IEvent } from "../../database/schemas/event.ts";
 import { type IGuild } from "../../database/schemas/guild.ts";
 import { WebhookClient } from "discord.js";
@@ -9,7 +17,8 @@ import { logger } from "../../index.ts";
 import { type IUser } from "../../database/schemas/user.ts";
 import Boost, { type IBoost } from "../../database/schemas/boost.ts";
 
-const defaultEventAlertMessage = ":earth_americas: | **[server]**\n:alarm_clock: | [time]\n:dart: | [role]";
+const defaultEventAlertMessage =
+  ":earth_americas: | **[server]**\n:alarm_clock: | [time]\n:dart: | [role]";
 
 interface EventNotification {
   events: number[];
@@ -66,7 +75,11 @@ function formatBoostNames(event: string, language: string): string {
   return KAKELE_BOOST_NAMES[event][language];
 }
 
-function replaceMessageKeywords(obj: MergedEventData, event: IEvent, str: string = defaultEventAlertMessage): string {
+function replaceMessageKeywords(
+  obj: MergedEventData,
+  event: IEvent,
+  str: string = defaultEventAlertMessage,
+): string {
   return str
     .replace("[server]", capitalizeFirstLetter(obj.server ?? "Server"))
     .replace("[time]", `<t:${event.active_until}:R>`)
@@ -194,25 +207,41 @@ async function updateEvents(): Promise<IEvent[]> {
 
     if (serverEvents.length > 0) {
       for (const event of serverEvents) {
-        const index = dbEvents.findIndex((x) => String(x.id) === String(event.id) && x.server === server);
+        const index = dbEvents.findIndex(
+          (x) => String(x.id) === String(event.id) && x.server === server,
+        );
 
         if (index === -1) {
           const newEvent = await Event.create({
             id: event.id,
-            language: { EN: event.name.english, PT: event.name.portuguese, ES: event.name.spanish, PL: event.name.polish },
+            language: {
+              EN: event.name.english,
+              PT: event.name.portuguese,
+              ES: event.name.spanish,
+              PL: event.name.polish,
+            },
             server,
             timestamp: now,
             active_until: event.active_until_unix_seconds,
-            activation_enabled_unix_seconds: event.activation_enabled_unix_seconds,
+            activation_enabled_unix_seconds:
+              event.activation_enabled_unix_seconds,
           });
 
           events.push(newEvent);
-        } else if (dbEvents[index].active_until < event.active_until_unix_seconds) {
+        } else if (
+          dbEvents[index].active_until < event.active_until_unix_seconds
+        ) {
           //TODO remove later
-          dbEvents[index].language = { EN: event.name.english, PT: event.name.portuguese, ES: event.name.spanish, PL: event.name.polish };
+          dbEvents[index].language = {
+            EN: event.name.english,
+            PT: event.name.portuguese,
+            ES: event.name.spanish,
+            PL: event.name.polish,
+          };
           dbEvents[index].active_until = event.active_until_unix_seconds;
           dbEvents[index].timestamp = now.toString();
-          dbEvents[index].activation_enabled_unix_seconds = event.activation_enabled_unix_seconds;
+          dbEvents[index].activation_enabled_unix_seconds =
+            event.activation_enabled_unix_seconds;
 
           events.push(dbEvents[index]);
         }
@@ -239,7 +268,9 @@ async function updateBoosts(): Promise<IBoost[]> {
 
     if (serverBoosts.length > 0) {
       for (const boost of serverBoosts) {
-        const index = dbBoosts.findIndex((x) => x.id === boost.id && x.server === server);
+        const index = dbBoosts.findIndex(
+          (x) => x.id === boost.id && x.server === server,
+        );
 
         if (index === -1) {
           const newBoost = await Boost.create({
@@ -250,7 +281,9 @@ async function updateBoosts(): Promise<IBoost[]> {
           });
 
           boosts.push(newBoost);
-        } else if (dbBoosts[index].active_until < boost.active_until_unix_seconds) {
+        } else if (
+          dbBoosts[index].active_until < boost.active_until_unix_seconds
+        ) {
           dbBoosts[index].active_until = boost.active_until_unix_seconds;
           dbBoosts[index].timestamp = now.toString();
 
@@ -265,7 +298,11 @@ async function updateBoosts(): Promise<IBoost[]> {
   return boosts;
 }
 
-function filterEventGuilds(arr: IGuild[], eventId: string, server: string): EventFiltered[] {
+function filterEventGuilds(
+  arr: IGuild[],
+  eventId: string,
+  server: string,
+): EventFiltered[] {
   const result: EventFiltered[] = [];
 
   for (const guild of arr) {
@@ -281,7 +318,10 @@ function filterEventGuilds(arr: IGuild[], eventId: string, server: string): Even
     });
 
     for (const guildEventData of data) {
-      if (guildEventData.events.includes(Number(eventId)) && guildEventData.server === server) {
+      if (
+        guildEventData.events.includes(Number(eventId)) &&
+        guildEventData.server === server
+      ) {
         result.push({
           data: guildEventData,
           message: defaultEventAlertMessage,
@@ -295,7 +335,11 @@ function filterEventGuilds(arr: IGuild[], eventId: string, server: string): Even
   return result;
 }
 
-function filterBoostGuilds(arr: IGuild[], eventId: string, server: string): BoostFiltered[] {
+function filterBoostGuilds(
+  arr: IGuild[],
+  eventId: string,
+  server: string,
+): BoostFiltered[] {
   const result: BoostFiltered[] = [];
 
   for (const guild of arr) {
@@ -311,7 +355,10 @@ function filterBoostGuilds(arr: IGuild[], eventId: string, server: string): Boos
     });
 
     for (const guildBoostData of data) {
-      if (guildBoostData.boosts.includes(eventId) && guildBoostData.server === server) {
+      if (
+        guildBoostData.boosts.includes(eventId) &&
+        guildBoostData.server === server
+      ) {
         result.push({
           data: guildBoostData,
           id: guild.id,
@@ -331,12 +378,22 @@ async function notifyEvents(guilds: IGuild[]): Promise<void> {
 
   if (events.length > 0) {
     for (const event of events) {
-      if (Number(event.active_until) >= now && now - Number(event.timestamp) <= 30) {
-        const filteredGuilds = eventConcatRoles(filterEventGuilds(guilds, event.id, event.server)) ?? [];
+      if (
+        Number(event.active_until) >= now &&
+        now - Number(event.timestamp) <= 30
+      ) {
+        const filteredGuilds =
+          eventConcatRoles(filterEventGuilds(guilds, event.id, event.server)) ??
+          [];
 
         for (const guild of filteredGuilds) {
           if (guild.payers) {
-            logger.debug("notifyEvents", event.language.EN, guild.id, event.server);
+            logger.debug(
+              "notifyEvents",
+              event.language.EN,
+              guild.id,
+              event.server,
+            );
 
             const webhookClient = new WebhookClient({ url: guild.webhook });
             webhookClient
@@ -345,7 +402,12 @@ async function notifyEvents(guilds: IGuild[]): Promise<void> {
                 username: event.language[guild.language] ?? event.language.EN,
               })
               .catch((e) => {
-                logger.error("notifyEvents", e.message, `guildId-${guild.id}`, `channelId-${guild.channel as string}`);
+                logger.error(
+                  "notifyEvents",
+                  e.message,
+                  `guildId-${guild.id}`,
+                  `channelId-${guild.channel as string}`,
+                );
               });
           }
         }
@@ -361,8 +423,13 @@ async function notifyBoosts(guilds: IGuild[]): Promise<void> {
 
   if (boosts.length > 0) {
     for (const boost of boosts) {
-      if (Number(boost.active_until) >= now && now - Number(boost.timestamp) <= 30) {
-        const filteredGuilds = boostConcatRoles(filterBoostGuilds(guilds, boost.id, boost.server));
+      if (
+        Number(boost.active_until) >= now &&
+        now - Number(boost.timestamp) <= 30
+      ) {
+        const filteredGuilds = boostConcatRoles(
+          filterBoostGuilds(guilds, boost.id, boost.server),
+        );
 
         for (const guild of filteredGuilds) {
           if (guild.payers) {
@@ -371,11 +438,20 @@ async function notifyBoosts(guilds: IGuild[]): Promise<void> {
             const webhookClient = new WebhookClient({ url: guild.webhook });
             webhookClient
               .send({
-                content: `**🌎 ${capitalizeFirstLetter(boost.server)}**\n⏰ <t:${boost.active_until}:R>\n📌 ${formatRoles(guild.roles ?? []).join(" ")}`,
+                content: `**🌎 ${capitalizeFirstLetter(
+                  boost.server,
+                )}**\n⏰ <t:${boost.active_until}:R>\n📌 ${formatRoles(
+                  guild.roles ?? [],
+                ).join(" ")}`,
                 username: formatBoostNames(boost.id, guild.language),
               })
               .catch((e) => {
-                logger.error("notifyBoosts", e.message, `guildId-${guild.id}`, `channelId-${guild.channels as string}`);
+                logger.error(
+                  "notifyBoosts",
+                  e.message,
+                  `guildId-${guild.id}`,
+                  `channelId-${guild.channels as string}`,
+                );
               });
           }
         }

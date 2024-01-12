@@ -17,7 +17,9 @@ import {
 import { capitalizeFirstLetter, getLevel } from "../../misc/util/index.ts";
 import { KAKELE_BOOST_NAMES } from "../../misc/constants/index.ts";
 
-export function PLAYER_RESULT_SELECTION_MENU(data: Array<{ item: CharacterData }>): StringSelectMenuBuilder {
+export function PLAYER_RESULT_SELECTION_MENU(
+  data: Array<{ item: CharacterData }>,
+): StringSelectMenuBuilder {
   const options: StringSelectMenuOptionBuilder[] = [];
 
   data.forEach((option, index) => {
@@ -27,56 +29,83 @@ export function PLAYER_RESULT_SELECTION_MENU(data: Array<{ item: CharacterData }
         .setLabel(option.item.name)
         .setDescription(
           `${getLevel(Number(option.item.experience))} ${capitalizeFirstLetter(
-            data[index].item.vocation.toLowerCase()
-          )} | ${capitalizeFirstLetter(option.item.server ?? "")}`
-        )
+            data[index].item.vocation.toLowerCase(),
+          )} | ${capitalizeFirstLetter(option.item.server ?? "")}`,
+        ),
     );
   });
 
-  const menu = new StringSelectMenuBuilder().setCustomId("PLAYER_RESULT_SELECTION_MENU").setPlaceholder("...").addOptions(options);
+  const menu = new StringSelectMenuBuilder()
+    .setCustomId("PLAYER_RESULT_SELECTION_MENU")
+    .setPlaceholder("...")
+    .addOptions(options);
 
   return menu;
 }
 
-export function MONSTER_RESULT_SELECTION_MENU(data: Array<{ item: KakeleMonster }>, languageKey: string): StringSelectMenuBuilder {
+export function MONSTER_RESULT_SELECTION_MENU(
+  data: Array<{ item: KakeleMonster }>,
+  languageKey: string,
+): StringSelectMenuBuilder {
   const options: StringSelectMenuOptionBuilder[] = [];
   data.forEach((option, index) => {
     options.push(
       new StringSelectMenuOptionBuilder()
         .setValue(String(index))
-        .setLabel(option.item[languageKey])
+        .setLabel(option.item[languageKey]),
     );
   });
 
-  const menu = new StringSelectMenuBuilder().setCustomId("MONSTER_RESULT_SELECTION_MENU").setPlaceholder("...").addOptions(options);
+  const menu = new StringSelectMenuBuilder()
+    .setCustomId("MONSTER_RESULT_SELECTION_MENU")
+    .setPlaceholder("...")
+    .addOptions(options);
 
   return menu;
 }
 
-export function ITEM_RESULT_SELECTION_MENU(data: Array<{ item: KakeleItem }>, language: SupportedLanguagesString): StringSelectMenuBuilder {
+export function ITEM_RESULT_SELECTION_MENU(
+  data: Array<{ item: KakeleItem }>,
+  language: SupportedLanguagesString,
+): StringSelectMenuBuilder {
   const options: StringSelectMenuOptionBuilder[] = [];
   data.forEach((option, index) => {
-    options.push(new StringSelectMenuOptionBuilder().setValue(String(index)).setLabel(option.item.name[language]));
+    options.push(
+      new StringSelectMenuOptionBuilder()
+        .setValue(String(index))
+        .setLabel(option.item.name[language]),
+    );
   });
 
-  const menu = new StringSelectMenuBuilder().setCustomId("ITEM_RESULT_SELECTION_MENU").setPlaceholder("...").addOptions(options);
+  const menu = new StringSelectMenuBuilder()
+    .setCustomId("ITEM_RESULT_SELECTION_MENU")
+    .setPlaceholder("...")
+    .addOptions(options);
 
   return menu;
 }
 
-export function MARKETPLACE_ADD_RESULT_SELECTION_MENU(client: Biridim, items: any[], language: string): StringSelectMenuBuilder {
-  const menu = new StringSelectMenuBuilder().setCustomId("MARKETPLACE_ADD_RESULT_SELECTION_MENU").setPlaceholder("...");
+export function MARKETPLACE_ADD_RESULT_SELECTION_MENU(
+  client: Biridim,
+  items: any[],
+  language: string,
+): StringSelectMenuBuilder {
+  const menu = new StringSelectMenuBuilder()
+    .setCustomId("MARKETPLACE_ADD_RESULT_SELECTION_MENU")
+    .setPlaceholder("...");
 
   const options: StringSelectMenuOptionBuilder[] = [];
 
   items.forEach((item) => {
-    const emoji = client.kakeleEmojis.find((x) => x.name === item.name.english.replace(/[^A-Z0-9]/gi, ""));
+    const emoji = client.kakeleEmojis.find(
+      (x) => x.name === item.name.english.replace(/[^A-Z0-9]/gi, ""),
+    );
 
     options.push(
       new StringSelectMenuOptionBuilder()
         .setValue(item.name[language])
         .setLabel(item.name[language])
-        .setEmoji(emoji != null ? { name: emoji.name, id: emoji.id } : {})
+        .setEmoji(emoji != null ? { name: emoji.name, id: emoji.id } : {}),
     );
   });
 
@@ -85,8 +114,12 @@ export function MARKETPLACE_ADD_RESULT_SELECTION_MENU(client: Biridim, items: an
   return menu;
 }
 
-export function MARKETPLACE_VIEW_SELECTION_MENU(items: IOfferItemDocument[]): StringSelectMenuBuilder {
-  const menu = new StringSelectMenuBuilder().setCustomId("MARKETPLACE_VIEW_SELECTION_MENU").setPlaceholder("...");
+export function MARKETPLACE_VIEW_SELECTION_MENU(
+  items: IOfferItemDocument[],
+): StringSelectMenuBuilder {
+  const menu = new StringSelectMenuBuilder()
+    .setCustomId("MARKETPLACE_VIEW_SELECTION_MENU")
+    .setPlaceholder("...");
 
   const options: StringSelectMenuOptionBuilder[] = [];
 
@@ -95,7 +128,7 @@ export function MARKETPLACE_VIEW_SELECTION_MENU(items: IOfferItemDocument[]): St
       new StringSelectMenuOptionBuilder()
         .setValue(item._id.toHexString())
         .setLabel(`${item.amount}x ${item.item.name}`)
-        .setDescription(item._id.toHexString())
+        .setDescription(item._id.toHexString()),
     );
   });
 
@@ -188,29 +221,32 @@ export function GENERIC_SERVER_SELECTION(): StringSelectMenuBuilder {
           id: "1096093692001013843",
           name: "orangeScroll",
         },
-      }
+      },
     );
 }
 
 export function CURRENCY_SELECTION(): StringSelectMenuBuilder {
-  return new StringSelectMenuBuilder().setCustomId("CURRENCY_SELECTION").setPlaceholder("..").addOptions(
-    {
-      label: "Dollar",
-      value: "usd",
-    },
-    {
-      label: "Real",
-      value: "brl",
-    },
-    {
-      label: "Peso",
-      value: "peso",
-    },
-    {
-      label: "Euro",
-      value: "eur",
-    }
-  );
+  return new StringSelectMenuBuilder()
+    .setCustomId("CURRENCY_SELECTION")
+    .setPlaceholder("..")
+    .addOptions(
+      {
+        label: "Dollar",
+        value: "usd",
+      },
+      {
+        label: "Real",
+        value: "brl",
+      },
+      {
+        label: "Peso",
+        value: "peso",
+      },
+      {
+        label: "Euro",
+        value: "eur",
+      },
+    );
 }
 
 export function NOTIFICATION_MENU_EVENT_CHANNEL_SELECTION(): ChannelSelectMenuBuilder {
@@ -249,7 +285,9 @@ export function NOTIFICATION_MENU_EVENT_SETTINGS_ROLE_SELECTION(): RoleSelectMen
     .setMaxValues(5);
 }
 
-export function NOTIFICATION_MENU_BOOST_SELECTION(language: SupportedLanguages): StringSelectMenuBuilder {
+export function NOTIFICATION_MENU_BOOST_SELECTION(
+  language: SupportedLanguages,
+): StringSelectMenuBuilder {
   return new StringSelectMenuBuilder()
     .setCustomId("NOTIFICATION_MENU_BOOST_SELECTION")
     .setPlaceholder("...")
@@ -285,7 +323,7 @@ export function NOTIFICATION_MENU_BOOST_SELECTION(language: SupportedLanguages):
       {
         label: KAKELE_BOOST_NAMES.ACTIVATE_BESTIARY[language],
         value: "ACTIVATE_BESTIARY",
-      }
+      },
     )
     .setMinValues(1)
     .setMaxValues(7);

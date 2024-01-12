@@ -1,7 +1,10 @@
 import fs from "fs";
 import { logger } from "../index.js";
 import { sleep } from "../misc/util/index.js";
-import { notifyBoosts, notifyEvents } from "../misc/kakeleNotifications/index.ts";
+import {
+  notifyBoosts,
+  notifyEvents,
+} from "../misc/kakeleNotifications/index.ts";
 import { getGuilds } from "../misc/database/index.ts";
 
 export async function loadCronJobs(): Promise<void> {
@@ -14,15 +17,12 @@ export async function loadCronJobs(): Promise<void> {
       } catch (error) {
         logger.error(`Error loading cron job ${job}:`, error);
       }
-    })
+    }),
   );
 }
 
 export async function startNotificationsWorker(): Promise<void> {
-  const guilds = await getGuilds({ "vip.payers": true });
-
-  // DEBUG
-  console.log(new Date());
+  const guilds = await getGuilds({ "vip.payers": { $exists: true } });
 
   await notifyEvents(guilds);
   await sleep(10 * 10000);

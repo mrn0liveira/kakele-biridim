@@ -9,7 +9,11 @@ import {
 import { getGuild, getUser } from "../../misc/database/index.ts";
 import { CustomEmbed } from "../../misc/util/index.ts";
 import Fuse from "fuse.js";
-import { SupportedLanguages, type InteractionArgs, type KakeleMonster } from "../../structures/misc.ts";
+import {
+  SupportedLanguages,
+  type InteractionArgs,
+  type KakeleMonster,
+} from "../../structures/misc.ts";
 import DiscordEvent from "../../structures/event.ts";
 import * as premium from "../../misc/premium/index.ts";
 import {
@@ -27,7 +31,10 @@ export default new DiscordEvent({
   async run(client, interaction) {
     const args: InteractionArgs = {
       user: await getUser(interaction.user.id),
-      guild: interaction.guildId != null ? await getGuild(interaction.guildId) : undefined,
+      guild:
+        interaction.guildId != null
+          ? await getGuild(interaction.guildId)
+          : undefined,
       language: SupportedLanguages.EN,
     };
 
@@ -38,16 +45,32 @@ export default new DiscordEvent({
         await interaction.reply({
           embeds: [
             new CustomEmbed()
-              .setTitle(client.translate("INTERACTION_UNKNOWN_COMMAND_TITLE", args.language))
-              .setDescription(
-                client.translate("INTERACTION_UNKNOWN_COMMAND_DESCRIPTION", args.language, {
-                  date:
-                    args.user.vip_data?.expiration_date !== undefined
-                      ? `<t:${Math.floor(new Date(args.user.vip_data.expiration_date).getTime() / 1000)}>`
-                      : "` `",
-                })
+              .setTitle(
+                client.translate(
+                  "INTERACTION_UNKNOWN_COMMAND_TITLE",
+                  args.language,
+                ),
               )
-              .setAuthor({ name: "Kakele Biridim", iconURL: client.icons.ElderVampireBrooch })
+              .setDescription(
+                client.translate(
+                  "INTERACTION_UNKNOWN_COMMAND_DESCRIPTION",
+                  args.language,
+                  {
+                    date:
+                      args.user.vip_data?.expiration_date !== undefined
+                        ? `<t:${Math.floor(
+                            new Date(
+                              args.user.vip_data.expiration_date,
+                            ).getTime() / 1000,
+                          )}>`
+                        : "` `",
+                  },
+                ),
+              )
+              .setAuthor({
+                name: "Kakele Biridim",
+                iconURL: client.icons.ElderVampireBrooch,
+              })
               .setColor(client.colors.DarkRed),
           ],
           ephemeral: true,
@@ -59,18 +82,30 @@ export default new DiscordEvent({
 
       const cooldown = client.handleInteractionCooldown(
         `${Events.InteractionCreate}-${interaction.commandName}-${interaction.user.id}`,
-        command.options.cooldown * 1000
+        command.options.cooldown * 1000,
       );
 
       if (typeof cooldown === "number") {
         await interaction.reply({
           embeds: [
             new CustomEmbed()
-              .setTitle(client.translate("INTERACTION_COOLDOWN_COMMAND_TITLE", args.language))
-              .setDescription(
-                client.translate("INTERACTION_COOLDOWN_COMMAND_DESCRIPTION", args.language, { time: Math.round(cooldown / 1000) })
+              .setTitle(
+                client.translate(
+                  "INTERACTION_COOLDOWN_COMMAND_TITLE",
+                  args.language,
+                ),
               )
-              .setAuthor({ name: "Kakele Biridim", iconURL: client.icons.ElderVampireBrooch })
+              .setDescription(
+                client.translate(
+                  "INTERACTION_COOLDOWN_COMMAND_DESCRIPTION",
+                  args.language,
+                  { time: Math.round(cooldown / 1000) },
+                ),
+              )
+              .setAuthor({
+                name: "Kakele Biridim",
+                iconURL: client.icons.ElderVampireBrooch,
+              })
               .setColor(client.colors.DarkRed),
           ],
           ephemeral: true,
@@ -78,20 +113,39 @@ export default new DiscordEvent({
         return;
       }
 
-      args.language = SupportedLanguages[args.user.language ?? args.guild?.language ?? SupportedLanguages.EN];
+      args.language =
+        SupportedLanguages[
+          args.user.language ?? args.guild?.language ?? SupportedLanguages.EN
+        ];
 
       if (args.guild?.blacklisted !== undefined) {
         const ban = args.guild.blacklisted.find(
-          (x) => (x.commands?.includes(interaction.commandName) || x.commands?.includes("all")) && new Date(x.expiration_date) > new Date()
+          (x) =>
+            (x.commands?.includes(interaction.commandName) ||
+              x.commands?.includes("all")) &&
+            new Date(x.expiration_date) > new Date(),
         );
 
         if (ban !== undefined) {
           await interaction.reply({
             embeds: [
               new CustomEmbed()
-                .setTitle(client.translate("INTERACTION_GUILD_BLACKLISTED_TITLE", args.language))
-                .setDescription(client.translate("INTERACTION_GUILD_BLACKLISTED_DESCRIPTION", args.language))
-                .setAuthor({ name: "Kakele Biridim", iconURL: client.icons.ElderVampireBrooch })
+                .setTitle(
+                  client.translate(
+                    "INTERACTION_GUILD_BLACKLISTED_TITLE",
+                    args.language,
+                  ),
+                )
+                .setDescription(
+                  client.translate(
+                    "INTERACTION_GUILD_BLACKLISTED_DESCRIPTION",
+                    args.language,
+                  ),
+                )
+                .setAuthor({
+                  name: "Kakele Biridim",
+                  iconURL: client.icons.ElderVampireBrooch,
+                })
                 .setColor(client.colors.DarkRed),
             ],
             ephemeral: true,
@@ -102,7 +156,10 @@ export default new DiscordEvent({
 
       if (args.user?.blacklisted !== undefined) {
         const ban = args.user.blacklisted.find(
-          (x) => (x.commands?.includes(interaction.commandName) || x.commands?.includes("all")) && new Date(x.expiration_date) > new Date()
+          (x) =>
+            (x.commands?.includes(interaction.commandName) ||
+              x.commands?.includes("all")) &&
+            new Date(x.expiration_date) > new Date(),
         );
 
         if (ban !== undefined) {
@@ -111,7 +168,10 @@ export default new DiscordEvent({
               new CustomEmbed()
                 .setTitle("Blacklisted User")
                 .setDescription("You won't be able to use the bot commands.")
-                .setAuthor({ name: "Kakele Biridim", iconURL: client.icons.ElderVampireBrooch })
+                .setAuthor({
+                  name: "Kakele Biridim",
+                  iconURL: client.icons.ElderVampireBrooch,
+                })
                 .setColor(client.colors.DarkRed),
             ],
             ephemeral: true,
@@ -131,14 +191,33 @@ export default new DiscordEvent({
             return false;
           }) ?? [];
 
-        if (guildPayers.length === 0 && (args.user.vip_data.expiration_date == null || new Date() > args.user.vip_data.expiration_date)) {
+        if (
+          guildPayers.length === 0 &&
+          (args.user.vip_data.expiration_date == null ||
+            new Date() > args.user.vip_data.expiration_date)
+        ) {
           await interaction.reply({
             embeds: [
               new CustomEmbed()
-                .setTitle(client.translate("INTERACTION_ONLY_VIP_TITLE", args.language))
-                .setDescription(client.translate("INTERACTION_ONLY_VIP_DESCRIPTION", args.language))
-                .setFooter({ text: client.translate("INTERACTION_ONLY_VIP_FOOTER", args.language) })
-                .setAuthor({ name: "Kakele Biridim", iconURL: client.icons.ElderVampireBrooch })
+                .setTitle(
+                  client.translate("INTERACTION_ONLY_VIP_TITLE", args.language),
+                )
+                .setDescription(
+                  client.translate(
+                    "INTERACTION_ONLY_VIP_DESCRIPTION",
+                    args.language,
+                  ),
+                )
+                .setFooter({
+                  text: client.translate(
+                    "INTERACTION_ONLY_VIP_FOOTER",
+                    args.language,
+                  ),
+                })
+                .setAuthor({
+                  name: "Kakele Biridim",
+                  iconURL: client.icons.ElderVampireBrooch,
+                })
                 .setColor(client.colors.DarkRed),
             ],
             ephemeral: true,
@@ -152,24 +231,40 @@ export default new DiscordEvent({
       logger.info(
         Events.InteractionCreate,
         interaction.commandName,
-        `userId-${interaction.user.id} ${interaction.guildId != null ? `guildId-${interaction.guildId}` : "DM"}`
+        `userId-${interaction.user.id} ${
+          interaction.guildId != null ? `guildId-${interaction.guildId}` : "DM"
+        }`,
       );
 
       command.run(interaction, args).catch(async (e) => {
         logger.error(
           Events.InteractionCreate,
-          `commandName-${interaction.commandName} userId-${interaction.user.id} ${
-            interaction.guildId != null ? `guildId-${interaction.guildId}` : "DM"
+          `commandName-${interaction.commandName} userId-${
+            interaction.user.id
+          } ${
+            interaction.guildId != null
+              ? `guildId-${interaction.guildId}`
+              : "DM"
           }`,
-          e
+          e,
         );
 
         await interaction.followUp({
           embeds: [
             new CustomEmbed()
-              .setTitle(client.translate("INTERACTION_ERROR_TITLE", args.language))
-              .setDescription(client.translate("INTERACTION_ERROR_DESCRIPTION", args.language))
-              .setAuthor({ name: "Kakele Biridim", iconURL: client.icons.ElderVampireBrooch })
+              .setTitle(
+                client.translate("INTERACTION_ERROR_TITLE", args.language),
+              )
+              .setDescription(
+                client.translate(
+                  "INTERACTION_ERROR_DESCRIPTION",
+                  args.language,
+                ),
+              )
+              .setAuthor({
+                name: "Kakele Biridim",
+                iconURL: client.icons.ElderVampireBrooch,
+              })
               .setColor(client.colors.DarkRed),
           ],
         });
@@ -218,7 +313,9 @@ export default new DiscordEvent({
         };
 
         const fuse = new Fuse(global.todayPlayerDataNames, filter);
-        const result = fuse.search(focusedOption.value).slice(0, playerSearchResultLimit) as Array<{ item: string }>;
+        const result = fuse
+          .search(focusedOption.value)
+          .slice(0, playerSearchResultLimit) as Array<{ item: string }>;
 
         if (result.length === 0) return;
 
@@ -235,9 +332,15 @@ export default new DiscordEvent({
 
         if (focusedOption.value?.length === 0) return;
 
-        args.language = SupportedLanguages[args.user.language ?? args.guild?.language ?? SupportedLanguages.EN];
+        args.language =
+          SupportedLanguages[
+            args.user.language ?? args.guild?.language ?? SupportedLanguages.EN
+          ];
 
-        const languageKey = args.language === SupportedLanguages.EN ? "name" : "language-" + args.language.toLowerCase();
+        const languageKey =
+          args.language === SupportedLanguages.EN
+            ? "name"
+            : "language-" + args.language.toLowerCase();
 
         const filter = {
           includeScore: true,
@@ -247,7 +350,9 @@ export default new DiscordEvent({
         };
 
         const fuse = new Fuse(client.kakeleMonsters, filter);
-        const result = fuse.search(focusedOption.value).slice(0, monsterSearchResultLimit) as Array<{ item: KakeleMonster }>;
+        const result = fuse
+          .search(focusedOption.value)
+          .slice(0, monsterSearchResultLimit) as Array<{ item: KakeleMonster }>;
 
         if (result.length === 0) return;
 

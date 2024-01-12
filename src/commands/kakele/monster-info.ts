@@ -7,7 +7,11 @@ import {
   ComponentType,
 } from "discord.js";
 import InteractionCommand from "../../structures/command.ts";
-import { SupportedLanguages, type InteractionArgs, type KakeleMonster } from "../../structures/misc.ts";
+import {
+  SupportedLanguages,
+  type InteractionArgs,
+  type KakeleMonster,
+} from "../../structures/misc.ts";
 import Fuse from "fuse.js";
 import { CustomEmbed } from "../../misc/util/index.ts";
 import { client } from "../../index.ts";
@@ -27,17 +31,37 @@ const BACKGROUND_IMAGE_PATHS = {
   Neutral: "./src/assets/monster-info/neutral.png",
 };
 
-async function createMonsterInfoImage(client: Biridim, monster: KakeleMonster, languageCode: SupportedLanguages): Promise<Canvas> {
-  const languageKey = languageCode === SupportedLanguages.EN ? "name" : "language-" + languageCode.toLowerCase();
+async function createMonsterInfoImage(
+  client: Biridim,
+  monster: KakeleMonster,
+  languageCode: SupportedLanguages,
+): Promise<Canvas> {
+  const languageKey =
+    languageCode === SupportedLanguages.EN
+      ? "name"
+      : "language-" + languageCode.toLowerCase();
 
-  const canvas = createCanvas(cachedImages.playerInfo.width, cachedImages.playerInfo.height);
+  const canvas = createCanvas(
+    cachedImages.playerInfo.width,
+    cachedImages.playerInfo.height,
+  );
   const ctx = canvas.getContext("2d");
 
-  const backgroundImagePath = BACKGROUND_IMAGE_PATHS[monster.energy] ?? BACKGROUND_IMAGE_PATHS.Neutral;
+  const backgroundImagePath =
+    BACKGROUND_IMAGE_PATHS[monster.energy] ?? BACKGROUND_IMAGE_PATHS.Neutral;
 
-  ctx.drawImage(await loadImage(backgroundImagePath), 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(
+    await loadImage(backgroundImagePath),
+    0,
+    0,
+    canvas.width,
+    canvas.height,
+  );
 
-  const monsterImageFilePath = `./src/assets/sprites/monsters/${monster.name.replaceAll("'", "")}.png`;
+  const monsterImageFilePath = `./src/assets/sprites/monsters/${monster.name.replaceAll(
+    "'",
+    "",
+  )}.png`;
 
   if (fs.existsSync(monsterImageFilePath)) {
     const monsterImage = await loadImage(monsterImageFilePath);
@@ -59,7 +83,12 @@ async function createMonsterInfoImage(client: Biridim, monster: KakeleMonster, l
   let itemX = 635;
   let itemY = 410;
 
-  let loot: Array<{ name: string; rarity: number; level: number; value: number }> = [];
+  let loot: Array<{
+    name: string;
+    rarity: number;
+    level: number;
+    value: number;
+  }> = [];
 
   rawLoot.forEach((drop) => {
     const item = client.kakeleItems.find((x) => x.name === drop);
@@ -82,8 +111,14 @@ async function createMonsterInfoImage(client: Biridim, monster: KakeleMonster, l
       count = 0;
     }
 
-    if (fs.existsSync(`./src/assets/sprites/items/${item.name.replaceAll("'", "")}.png`)) {
-      const avatar = await loadImage(`./src/assets/sprites/items/${item.name.replaceAll("'", "")}.png`);
+    if (
+      fs.existsSync(
+        `./src/assets/sprites/items/${item.name.replaceAll("'", "")}.png`,
+      )
+    ) {
+      const avatar = await loadImage(
+        `./src/assets/sprites/items/${item.name.replaceAll("'", "")}.png`,
+      );
       ctx.drawImage(avatar, itemX, itemY, 64, 64);
       itemX += 64;
     }
@@ -164,18 +199,28 @@ export default new InteractionCommand({
           pl: "Nazwa potwora.",
         })
         .setRequired(true)
-        .setAutocomplete(true)
+        .setAutocomplete(true),
     ),
   options: {
-    clientPermissions: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.UseExternalEmojis, PermissionFlagsBits.AttachFiles],
+    clientPermissions: [
+      PermissionFlagsBits.SendMessages,
+      PermissionFlagsBits.UseExternalEmojis,
+      PermissionFlagsBits.AttachFiles,
+    ],
     cooldown: 3,
     guilds: [],
     premium: false,
     ephemeral: false,
   },
-  async run(interaction: ChatInputCommandInteraction<"cached">, args: InteractionArgs) {
+  async run(
+    interaction: ChatInputCommandInteraction<"cached">,
+    args: InteractionArgs,
+  ) {
     const monster = interaction.options.getString("monster") ?? "";
-    const languageKey = args.language === SupportedLanguages.EN ? "name" : "language-" + args.language.toLowerCase();
+    const languageKey =
+      args.language === SupportedLanguages.EN
+        ? "name"
+        : "language-" + args.language.toLowerCase();
 
     const filter = {
       includeScore: true,
@@ -187,14 +232,29 @@ export default new InteractionCommand({
     const fuse = new Fuse(client.kakeleMonsters, filter);
     const result = fuse
       .search(monster)
-      .filter((e) => typeof e.score === "number" && e.score <= monsterSearchThreshold)
+      .filter(
+        (e) => typeof e.score === "number" && e.score <= monsterSearchThreshold,
+      )
       .slice(0, monsterSearchResultLimit) as Array<{ item: KakeleMonster }>;
 
     if (result.length === 0) {
       const noResultEmbed = new CustomEmbed()
-        .setTitle(client.translate("PLAYER_SEARCH_BY_SIMILARITY_EMPTY_TITLE", args.language))
-        .setDescription(client.translate("PLAYER_SEARCH_BY_SIMILARITY_EMPTY_DESCRIPTION", args.language))
-        .setAuthor({ name: "Kakele Biridim", iconURL: client.icons.ElderVampireBrooch })
+        .setTitle(
+          client.translate(
+            "PLAYER_SEARCH_BY_SIMILARITY_EMPTY_TITLE",
+            args.language,
+          ),
+        )
+        .setDescription(
+          client.translate(
+            "PLAYER_SEARCH_BY_SIMILARITY_EMPTY_DESCRIPTION",
+            args.language,
+          ),
+        )
+        .setAuthor({
+          name: "Kakele Biridim",
+          iconURL: client.icons.ElderVampireBrooch,
+        })
         .setColor(client.colors.DarkRed);
 
       return await interaction.editReply({ embeds: [noResultEmbed] });
@@ -202,48 +262,76 @@ export default new InteractionCommand({
 
     if (result.length > 1) {
       const resultSelectionEmbed = new CustomEmbed()
-        .setTitle(client.translate("PLAYER_SEARCH_RESULT_SELECTION_TITLE", args.language))
-        .setDescription(client.translate("PLAYER_SEARCH_RESULT_SELECTION_DESCRIPTION", args.language))
-        .setAuthor({ name: "Kakele Biridim", iconURL: client.icons.ElderVampireBrooch })
+        .setTitle(
+          client.translate(
+            "PLAYER_SEARCH_RESULT_SELECTION_TITLE",
+            args.language,
+          ),
+        )
+        .setDescription(
+          client.translate(
+            "PLAYER_SEARCH_RESULT_SELECTION_DESCRIPTION",
+            args.language,
+          ),
+        )
+        .setAuthor({
+          name: "Kakele Biridim",
+          iconURL: client.icons.ElderVampireBrooch,
+        })
         .setColor(client.colors.LimeGreen);
 
-      const actionRow = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(MONSTER_RESULT_SELECTION_MENU(result, languageKey));
+      const actionRow =
+        new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+          MONSTER_RESULT_SELECTION_MENU(result, languageKey),
+        );
 
-      await interaction.editReply({ embeds: [resultSelectionEmbed], components: [actionRow] }).then((message) => {
-        const collector = message.createMessageComponentCollector({
-          componentType: ComponentType.StringSelect,
-          time: 30000,
+      await interaction
+        .editReply({ embeds: [resultSelectionEmbed], components: [actionRow] })
+        .then((message) => {
+          const collector = message.createMessageComponentCollector({
+            componentType: ComponentType.StringSelect,
+            time: 30000,
+          });
+
+          collector.on("collect", async (i) => {
+            if (i.user.id === interaction.user.id) {
+              const index = i.values[0];
+
+              await i.deferUpdate();
+
+              const image = await createMonsterInfoImage(
+                client,
+                result[index].item,
+                args.language,
+              );
+
+              await interaction.editReply({
+                files: [
+                  {
+                    name: `${interaction.commandName}-${
+                      result[index].item.name as string
+                    }.png`,
+                    attachment: image.toBuffer(),
+                  },
+                ],
+                embeds: [],
+                components: [],
+              });
+            }
+          });
+
+          collector.on("end", (collected) => {
+            if (collected.size === 0) {
+              message.delete().catch(() => {});
+            }
+          });
         });
-
-        collector.on("collect", async (i) => {
-          if (i.user.id === interaction.user.id) {
-            const index = i.values[0];
-
-            await i.deferUpdate();
-
-            const image = await createMonsterInfoImage(client, result[index].item, args.language);
-
-            await interaction.editReply({
-              files: [
-                {
-                  name: `${interaction.commandName}-${result[index].item.name as string}.png`,
-                  attachment: image.toBuffer(),
-                },
-              ],
-              embeds: [],
-              components: [],
-            });
-          }
-        });
-
-        collector.on("end", (collected) => {
-          if (collected.size === 0) {
-            message.delete().catch(() => {});
-          }
-        });
-      });
     } else {
-      const image = await createMonsterInfoImage(client, result[0].item, args.language);
+      const image = await createMonsterInfoImage(
+        client,
+        result[0].item,
+        args.language,
+      );
 
       await interaction.editReply({
         files: [

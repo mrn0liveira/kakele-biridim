@@ -1,8 +1,11 @@
-import Event, { type IEvent } from '../../database/schemas/event.ts';
-import { type IGuild, Guild } from '../../database/schemas/guild.ts';
-import { MarketplaceItem, type IOfferItemDocument } from '../../database/schemas/marketplace-item.ts';
-import User, { type IUser } from '../../database/schemas/user.ts';
-import cachegoose from 'recachegoose';
+import Event, { type IEvent } from "../../database/schemas/event.ts";
+import { type IGuild, Guild } from "../../database/schemas/guild.ts";
+import {
+  MarketplaceItem,
+  type IOfferItemDocument,
+} from "../../database/schemas/marketplace-item.ts";
+import User, { type IUser } from "../../database/schemas/user.ts";
+import cachegoose from "recachegoose";
 
 /**
  * Retrieves a guild by its ID.
@@ -12,7 +15,9 @@ import cachegoose from 'recachegoose';
  */
 export async function getGuild(id: string): Promise<IGuild> {
   // @ts-ignore
-  let guild = await Guild.findOne({ id }).populate([{ path: 'vip.payers', strictPopulate: false }]);
+  let guild = await Guild.findOne({ id }).populate([
+    { path: "vip.payers", strictPopulate: false },
+  ]);
 
   if (guild === null) {
     guild = await Guild.create({ id });
@@ -46,7 +51,7 @@ export async function getUser(id: string): Promise<IUser> {
  */
 export async function getMarketList(query: any): Promise<IOfferItemDocument[]> {
   const items: IOfferItemDocument[] = await MarketplaceItem.find(query)
-    .populate([{ path: 'owner', strictPopulate: false }])
+    .populate([{ path: "owner", strictPopulate: false }])
     // @ts-ignore
     .cache(10, `marketList${JSON.stringify(query)}`);
 
@@ -61,7 +66,7 @@ export async function getMarketList(query: any): Promise<IOfferItemDocument[]> {
  */
 export async function getGuilds(query: any): Promise<IGuild[]> {
   const guilds: IGuild[] = await Guild.find(query)
-    .populate([{ path: 'vip.payers', strictPopulate: false }])
+    .populate([{ path: "vip.payers", strictPopulate: false }])
     // @ts-ignore
     .cache(300, `guilds${JSON.stringify(query)}`);
 
@@ -76,7 +81,10 @@ export async function getGuilds(query: any): Promise<IGuild[]> {
  */
 export async function getKakeleEvents(query: any): Promise<IEvent[]> {
   // @ts-ignore
-  const events: IEvent[] = await Event.find(query).cache(300, `events${JSON.stringify(query)}`);
+  const events: IEvent[] = await Event.find(query).cache(
+    300,
+    `events${JSON.stringify(query)}`,
+  );
 
   return events;
 }

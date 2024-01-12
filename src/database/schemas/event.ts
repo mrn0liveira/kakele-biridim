@@ -1,12 +1,12 @@
-import mongoose, { type Document, Schema } from 'mongoose'
+import mongoose, { type Document, Schema } from "mongoose";
 
 export interface IEvent extends Document {
-  id: string
-  language: Record<string, string>
-  timestamp: string
-  active_until: string
-  activation_enabled_unix_seconds: string
-  server: string
+  id: string;
+  language: Record<string, string>;
+  timestamp: string;
+  active_until: string;
+  activation_enabled_unix_seconds: string;
+  server: string;
 }
 
 const eventSchema: Schema<IEvent> = new Schema<IEvent>({
@@ -15,7 +15,7 @@ const eventSchema: Schema<IEvent> = new Schema<IEvent>({
   timestamp: { type: String },
   active_until: { type: String },
   activation_enabled_unix_seconds: { type: String },
-  server: { type: String }
-})
+  server: { type: String },
+});
 
-export default mongoose.model<IEvent>('Event', eventSchema)
+export default mongoose.model<IEvent>("Event", eventSchema);

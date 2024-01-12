@@ -6,7 +6,11 @@ import "dotenv/config";
 const owners = process.env.OWNER;
 
 function isValidNumber(value: number | string) {
-  return !isNaN(Number(value)) && Number.isInteger(Number(value)) && Number(value) >= 0;
+  return (
+    !isNaN(Number(value)) &&
+    Number.isInteger(Number(value)) &&
+    Number(value) >= 0
+  );
 }
 
 function addTimeToTimestamp(timestamp, hours, days, minutes) {
@@ -154,7 +158,9 @@ export default new DiscordEvent({
         }
       } else if (command === "..reload") {
         if (args.length === 0) {
-          await message.reply("Please provide the name of the command to reload.");
+          await message.reply(
+            "Please provide the name of the command to reload.",
+          );
           return;
         }
 
@@ -190,7 +196,9 @@ export default new DiscordEvent({
 
       const timestamp = new Date();
 
-      const adjustedTimestamp = Math.round(addTimeToTimestamp(timestamp, hours, days, minutes) / 1000);
+      const adjustedTimestamp = Math.round(
+        addTimeToTimestamp(timestamp, hours, days, minutes) / 1000,
+      );
 
       const responseMessage = `<t:${adjustedTimestamp}:R> (<t:${adjustedTimestamp}:f>)`;
       await message.channel.send(responseMessage);
