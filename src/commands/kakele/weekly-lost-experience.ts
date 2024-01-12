@@ -22,7 +22,8 @@ export async function createDailyLostRankingImage(
 
   const canvasWidth = server === "global" ? 1280 : 1136;
   const canvas = createCanvas(canvasWidth, 720);
-  const backgroundImagePath = server === "global" ? "./src/assets/lost-experience/00.png" : "./src/assets/lost-experience/11.png";
+  const backgroundImagePath =
+    server === "global" ? "./src/assets/lost-experience/00.png" : "./src/assets/lost-experience/11.png";
   const background = await loadImage(backgroundImagePath);
   const ctx = canvas.getContext("2d");
 
@@ -91,7 +92,9 @@ export async function createDailyLostRankingImage(
     }
 
     if (fs.existsSync(`./src/assets/player/guilds/${formatted[i].guild}-${formatted[i].server ?? ""}.png`)) {
-      const avatar = await loadImage(`./src/assets/player/guilds/${formatted[i].guild}-${formatted[i].server ?? ""}.png`);
+      const avatar = await loadImage(
+        `./src/assets/player/guilds/${formatted[i].guild}-${formatted[i].server ?? ""}.png`
+      );
       ctx.drawImage(avatar, 460, y - 14, 16, 16);
     } else {
       const avatar = await loadImage("./src/assets/player/guilds/default.png");
@@ -278,7 +281,11 @@ export default new InteractionCommand({
       })
     ),
   options: {
-    clientPermissions: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.UseExternalEmojis, PermissionFlagsBits.AttachFiles],
+    clientPermissions: [
+      PermissionFlagsBits.SendMessages,
+      PermissionFlagsBits.UseExternalEmojis,
+      PermissionFlagsBits.AttachFiles,
+    ],
     cooldown: 3,
     guilds: [],
     premium: false,
@@ -291,9 +298,15 @@ export default new InteractionCommand({
     let serverData: CharacterData[] = [];
 
     if (guild.length > 0) {
-      serverData = server === "global" ? global.weeklyPlayerData?.slice() : global.weeklyPlayerData?.slice().filter((x) => x.server === server && x.guild === guild);
+      serverData =
+        server === "global"
+          ? global.weeklyPlayerData?.slice()
+          : global.weeklyPlayerData?.slice().filter((x) => x.server === server && x.guild === guild);
     } else {
-      serverData = server === "global" ? global.weeklyPlayerData?.slice() : global.weeklyPlayerData?.slice().filter((x) => x.server === server);
+      serverData =
+        server === "global"
+          ? global.weeklyPlayerData?.slice()
+          : global.weeklyPlayerData?.slice().filter((x) => x.server === server);
     }
 
     if (guild.length > 0 && (serverData === undefined || serverData?.length === 0)) {
@@ -336,7 +349,16 @@ export default new InteractionCommand({
       return;
     }
 
-    const image = await createDailyLostRankingImage(client, JSON.parse(JSON.stringify(serverData)), server, args.language, global.weeklyPlayerData.timestamp);
+    const image = await createDailyLostRankingImage(
+      client,
+      JSON.parse(JSON.stringify(serverData)),
+      server,
+      args.language,
+      {
+        old: global.weeklyPlayerData.timestamp.old,
+        new: global.dailyPlayerData.timestamp.new,
+      }
+    );
 
     await interaction.editReply({
       files: [

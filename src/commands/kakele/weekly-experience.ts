@@ -24,7 +24,8 @@ export async function createWeeklyRankingImage(
 
   const canvasWidth = server === "global" ? 1280 : 1136;
   const canvas = createCanvas(canvasWidth, 720);
-  const backgroundImagePath = server === "global" ? "./src/assets/weekly-experience/2.png" : "./src/assets/weekly-experience/3.png";
+  const backgroundImagePath =
+    server === "global" ? "./src/assets/weekly-experience/2.png" : "./src/assets/weekly-experience/3.png";
   const background = await loadImage(backgroundImagePath);
   const ctx = canvas.getContext("2d");
 
@@ -105,7 +106,9 @@ export async function createWeeklyRankingImage(
     }
 
     if (fs.existsSync(`./src/assets/player/guilds/${formatted[i].guild}-${formatted[i].server ?? ""}.png`)) {
-      const avatar = await loadImage(`./src/assets/player/guilds/${formatted[i].guild}-${formatted[i].server ?? ""}.png`);
+      const avatar = await loadImage(
+        `./src/assets/player/guilds/${formatted[i].guild}-${formatted[i].server ?? ""}.png`
+      );
       ctx.drawImage(avatar, 460, y - 14, 16, 16);
     } else {
       const avatar = await loadImage("./src/assets/player/guilds/default.png");
@@ -277,7 +280,11 @@ export default new InteractionCommand({
       })
     ),
   options: {
-    clientPermissions: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.UseExternalEmojis, PermissionFlagsBits.AttachFiles],
+    clientPermissions: [
+      PermissionFlagsBits.SendMessages,
+      PermissionFlagsBits.UseExternalEmojis,
+      PermissionFlagsBits.AttachFiles,
+    ],
     cooldown: 3,
     guilds: [],
     premium: false,
@@ -290,9 +297,15 @@ export default new InteractionCommand({
     let serverData: CharacterData[] = [];
 
     if (guild.length > 0) {
-      serverData = server === "global" ? global.weeklyPlayerData?.slice() : global.weeklyPlayerData?.slice().filter((x) => x.server === server && x.guild === guild);
+      serverData =
+        server === "global"
+          ? global.weeklyPlayerData?.slice()
+          : global.weeklyPlayerData?.slice().filter((x) => x.server === server && x.guild === guild);
     } else {
-      serverData = server === "global" ? global.weeklyPlayerData?.slice() : global.weeklyPlayerData?.slice().filter((x) => x.server === server);
+      serverData =
+        server === "global"
+          ? global.weeklyPlayerData?.slice()
+          : global.weeklyPlayerData?.slice().filter((x) => x.server === server);
     }
 
     if (guild.length > 0 && (serverData === undefined || serverData?.length === 0)) {
@@ -335,7 +348,16 @@ export default new InteractionCommand({
       return;
     }
 
-    const image = await createWeeklyRankingImage(client, JSON.parse(JSON.stringify(serverData)), server, args.language, global.weeklyPlayerData.timestamp);
+    const image = await createWeeklyRankingImage(
+      client,
+      JSON.parse(JSON.stringify(serverData)),
+      server,
+      args.language,
+      {
+        old: global.weeklyPlayerData.timestamp.old,
+        new: global.dailyPlayerData.timestamp.new,
+      }
+    );
 
     await interaction.editReply({
       files: [
