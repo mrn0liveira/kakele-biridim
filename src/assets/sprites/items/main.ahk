@@ -2,11 +2,11 @@
 SendMode Input  ; Reduz o atraso de envio
 SetWorkingDir %A_ScriptDir%  ; Garante que o diretório de trabalho seja o do script
 
-directory := "C:\Users\Cesar\Documents\Projetos\kakele-biridim-b\src\assets\sprites\items"  ; Substitua pelo caminho do seu diretório
+directory := "C:\Users\Cesar\Documents\Projetos\kakele-biridim-b\src\assets\sprites\monsters"  ; Substitua pelo caminho do seu diretório
 
 Loop, Files, %directory%\*.png  ; Percorre todos os arquivos .png no diretório
 {
-    if InStr(A_LoopFileName, "'")  ; Verifica se o nome do arquivo contém apóstrofo
+    if InStr(A_LoopFileName, ".")  ; Verifica se o nome do arquivo contém apóstrofo
     {
         newFileName := StrReplace(A_LoopFileName, "'", "")  ; Remove os apóstrofos do nome do arquivo
 
@@ -16,7 +16,7 @@ Loop, Files, %directory%\*.png  ; Percorre todos os arquivos .png no diretório
         FileMove, %oldFilePath%, %newFilePath%  ; Renomeia o arquivo
         if ErrorLevel
         {
-            MsgBox, Erro ao renomear: %oldFilePath%
+            tooltip, Erro ao renomear: %oldFilePath% %Error%
         }
         else
         {
